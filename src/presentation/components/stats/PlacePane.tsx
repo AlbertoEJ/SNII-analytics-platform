@@ -33,7 +33,7 @@ export function PlacePane({ total, stateRows, dbToDisplay, locale, strings }: Pr
 
       <section className="space-y-2">
         <h3 className="text-sm font-semibold">{strings.rankingTitle}</h3>
-        <IntensityBarList rows={ranking} total={total} mode="intensity" palette="state" />
+        <IntensityBarList rows={ranking} total={total} mode="intensity" palette="state" locale={locale} />
       </section>
 
       <StateLevelSmallMultiples

@@ -2,6 +2,7 @@ import { ConcentrationLine } from "./ConcentrationLine";
 import { IntensityBarList, type RankedRow } from "./IntensityBarList";
 import { DisciplineTreemap } from "@/presentation/components/DisciplineTreemap";
 import type { AreaDisciplineRow, InstitutionCount } from "@/domain/repositories/ResearcherRepository";
+import type { Locale } from "@/presentation/i18n/messages";
 
 interface Strings {
   areaTitle: string;
@@ -15,10 +16,11 @@ interface Props {
   total: number;
   areaRows: AreaDisciplineRow[];
   institutions: InstitutionCount[];
+  locale: Locale;
   strings: Strings;
 }
 
-export function FieldPane({ total, areaRows, institutions, strings }: Props) {
+export function FieldPane({ total, areaRows, institutions, locale, strings }: Props) {
   // Area totals (sum across disciplines).
   const areaTotals = new Map<string, number>();
   for (const row of areaRows) {
@@ -38,7 +40,7 @@ export function FieldPane({ total, areaRows, institutions, strings }: Props) {
     <div id="field" className="space-y-6">
       <section className="space-y-2">
         <h3 className="text-sm font-semibold">{strings.areaTitle}</h3>
-        <IntensityBarList rows={areaRanking} total={total} mode="intensity" palette="area" />
+        <IntensityBarList rows={areaRanking} total={total} mode="intensity" palette="area" locale={locale} />
       </section>
 
       <DisciplineTreemap rows={areaRows} title={strings.treemapTitle} subtitle={strings.treemapSubtitle} />
@@ -46,7 +48,7 @@ export function FieldPane({ total, areaRows, institutions, strings }: Props) {
       <section className="space-y-2">
         <h3 className="text-sm font-semibold">{strings.institutionTitle}</h3>
         <ConcentrationLine text={strings.institutionConcentration} />
-        <IntensityBarList rows={institutionRanking} total={total} mode="intensity" palette="institution" />
+        <IntensityBarList rows={institutionRanking} total={total} mode="intensity" palette="institution" locale={locale} />
       </section>
     </div>
   );

@@ -63,7 +63,7 @@ export function CountPane({ total, levels, locale, strings }: Props) {
 
       <section className="space-y-2">
         <h3 className="text-sm font-semibold">{strings.rankingTitle}</h3>
-        <IntensityBarList rows={rows} total={total} mode="categorical" />
+        <IntensityBarList rows={rows} total={total} mode="categorical" locale={locale} />
       </section>
     </div>
   );

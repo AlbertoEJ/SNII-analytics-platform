@@ -97,7 +97,7 @@ export default async function StatsPage() {
   // --- Headline cards ---
   const topState = stateShare.entities[0] ?? { label: "—", count: 0 };
   const topInstitution = institutionShare.entities[0] ?? { label: "—", count: 0 };
-  const topArea = areaItems.slice().sort((a, b) => b.count - a.count)[0] ?? { label: "—", count: 0 };
+  const topArea = topNShare(areaItems, 1).entities[0] ?? { label: "—", count: 0 };
 
   const topStatePct = total > 0 ? topState.count / total : 0;
   const topInstitutionPct = total > 0 ? topInstitution.count / total : 0;
@@ -116,7 +116,9 @@ export default async function StatsPage() {
     {
       label: t.stats.headline.topState,
       value: topState.label,
-      caption: t.stats.headline.topStateCaption(topState.label, oneInN(topStatePct)),
+      caption: topStatePct > 0
+        ? t.stats.headline.topStateCaption(topState.label, oneInN(topStatePct))
+        : t.stats.headline.totalCaption,
       href: `#state-${encodeURIComponent(
         // Store the DB-name in the hash so the anchor matches the PlacePane row id.
         Object.entries(dbToDisplay).find(([, display]) => display === topState.label)?.[0] ?? topState.label,
@@ -169,6 +171,7 @@ export default async function StatsPage() {
             total={total}
             areaRows={areaBreakdown}
             institutions={institutions}
+            locale={locale}
             strings={fieldStrings}
           />
         }
