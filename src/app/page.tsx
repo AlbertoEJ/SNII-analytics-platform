@@ -26,11 +26,12 @@ export default async function Home({
 
   const locale = await getLocale();
   const t = getMessages(locale);
-  const { getCountsByState, getAnalysis, repo } = container();
-  const [areas, mapData, stateLevel] = await Promise.all([
+  const { getCountsByState, getAnalysis, getStats, repo } = container();
+  const [areas, mapData, stateLevel, stats] = await Promise.all([
     repo.distinctValues("area_conocimiento"),
     buildMexicoMap(),
     getAnalysis.crossStateLevel(),
+    getStats.execute(),
   ]);
   const area = rawArea && areas.includes(rawArea) ? rawArea : undefined;
   const stateCounts = await getCountsByState.execute({ area });
@@ -101,17 +102,27 @@ export default async function Home({
       <div className={`grid gap-4 lg:grid-cols-[1fr_320px] ${CARD_HEIGHT}`}>
         {/* Map card */}
         <Card className="flex flex-col gap-0 py-0 overflow-hidden">
-          <CardHeader className="py-3 border-b flex-row items-center justify-between gap-4">
-            <div className="flex items-baseline gap-3">
-              <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
-                {t.map.total}
-              </span>
-              <span className="text-xl font-semibold tabular-nums">
-                {total.toLocaleString()}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                · {stateCounts.length} {t.map.states}
-              </span>
+          <CardHeader className="py-3 border-b flex-row items-start justify-between gap-4">
+            <div className="flex flex-col gap-0.5">
+              <div className="flex items-baseline gap-3">
+                <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                  {t.map.total}
+                </span>
+                <span className="text-xl font-semibold tabular-nums">
+                  {total.toLocaleString(locale === "es" ? "es-MX" : "en-US")}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  · {stateCounts.length} {t.map.states}
+                </span>
+              </div>
+              {!area && stats.total > total && (
+                <span className="text-[11px] text-muted-foreground">
+                  {t.map.coverageNote(
+                    total.toLocaleString(locale === "es" ? "es-MX" : "en-US"),
+                    stats.total.toLocaleString(locale === "es" ? "es-MX" : "en-US"),
+                  )}
+                </span>
+              )}
             </div>
             <div className="hidden sm:block">
               <MapLegend max={max} label={t.map.legend} />

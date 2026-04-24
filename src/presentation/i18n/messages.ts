@@ -136,6 +136,8 @@ export const messages = {
       ofTotal: "del total",
       legend: "Densidad",
       states: "estados",
+      coverageNote: (mapped: string, full: string) =>
+        `${mapped} de ${full} con entidad asignada`,
     },
     error: {
       title: "Algo salió mal",
@@ -278,6 +280,8 @@ export const messages = {
       ofTotal: "of total",
       legend: "Density",
       states: "states",
+      coverageNote: (mapped: string, full: string) =>
+        `${mapped} of ${full} with a state assigned`,
     },
     error: {
       title: "Something went wrong",
