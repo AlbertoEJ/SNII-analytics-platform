@@ -28,7 +28,7 @@ function lerp(a: number, b: number, t: number): number {
 export function intensityShade(palette: PaletteName, ratio: number): string {
   const t = clamp(ratio, 0, 1);
   const p = PALETTES[palette];
-  const h = p.light[0];
+  const h = lerp(p.light[0], p.dark[0], t);
   const s = lerp(p.light[1], p.dark[1], t);
   const l = lerp(p.light[2], p.dark[2], t);
   return `hsl(${h.toFixed(0)} ${s.toFixed(1)}% ${l.toFixed(1)}%)`;
@@ -36,6 +36,5 @@ export function intensityShade(palette: PaletteName, ratio: number): string {
 
 /** The solid "anchor" color for a palette — used for treemap tiles, headline accents, etc. */
 export function paletteAnchor(palette: PaletteName): string {
-  const p = PALETTES[palette];
-  return `hsl(${p.dark[0]} ${p.dark[1]}% ${p.dark[2]}%)`;
+  return intensityShade(palette, 1);
 }
