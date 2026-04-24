@@ -31,10 +31,35 @@ export interface StateCount {
   count: number;
 }
 
+export interface StateLevelRow {
+  entidad: string;
+  c: number;
+  n1: number;
+  n2: number;
+  n3: number;
+  e: number;
+  total: number;
+}
+
+export interface AreaDisciplineRow {
+  area: string;
+  discipline: string;
+  subdiscipline: string;
+  count: number;
+}
+
+export interface InstitutionCount {
+  institucion: string;
+  count: number;
+}
+
 export interface ResearcherRepository {
   search(opts: SearchOptions): Promise<SearchResult>;
   findByCvu(cvu: number): Promise<Researcher | null>;
   facets(): Promise<FacetCounts>;
   distinctValues(column: "area_conocimiento" | "entidad_final"): Promise<string[]>;
   countsByState(filters?: { area?: string }): Promise<StateCount[]>;
+  crossStateLevel(): Promise<StateLevelRow[]>;
+  areaDisciplineBreakdown(): Promise<AreaDisciplineRow[]>;
+  countsByInstitution(): Promise<InstitutionCount[]>;
 }

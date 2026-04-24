@@ -5,6 +5,7 @@ import { SearchResearchers } from "@/application/use-cases/SearchResearchers";
 import { GetResearcherByCvu } from "@/application/use-cases/GetResearcherByCvu";
 import { GetStats } from "@/application/use-cases/GetStats";
 import { GetCountsByState } from "@/application/use-cases/GetCountsByState";
+import { GetAnalysis } from "@/application/use-cases/GetAnalysis";
 
 function build() {
   const repo = new SupabaseResearcherRepository(getReadClient());
@@ -14,6 +15,7 @@ function build() {
     getResearcherByCvu: new GetResearcherByCvu(repo),
     getStats: new GetStats(repo),
     getCountsByState: new GetCountsByState(repo),
+    getAnalysis: new GetAnalysis(repo),
   };
 }
 

@@ -1,11 +1,14 @@
 import type { SnSupabaseClient } from "@/infrastructure/supabase/client";
 import type { Researcher } from "@/domain/entities/Researcher";
 import type {
+  AreaDisciplineRow,
   FacetCounts,
+  InstitutionCount,
   ResearcherRepository,
   SearchOptions,
   SearchResult,
   StateCount,
+  StateLevelRow,
 } from "@/domain/repositories/ResearcherRepository";
 import { isValidSniiLevel } from "@/domain/value-objects/SniiLevel";
 
@@ -34,6 +37,10 @@ type Row = {
   entidad_final: string | null;
   notas: string | null;
 };
+
+function toNum(v: unknown): number {
+  return typeof v === "string" ? Number.parseInt(v, 10) : (v as number);
+}
 
 function mapRow(r: Row): Researcher {
   return {
@@ -74,8 +81,20 @@ export class SupabaseResearcherRepository implements ResearcherRepository {
       .range(opts.offset, opts.offset + opts.limit - 1);
 
     if (opts.query?.trim()) {
-      const escaped = opts.query.trim().replace(/[\\%_]/g, (c) => `\\${c}`);
-      q = q.ilike("nombre", `%${escaped}%`);
+      // Tokenize on whitespace and AND the tokens, so "Marco Antonio Moreno"
+      // matches "MORENO ARMENDARIZ, MARCO ANTONIO" (different order, with comma).
+      // Strip accents client-side and search against the indexed nombre_unaccent
+      // generated column for accent-insensitive matching.
+      const tokens = opts.query
+        .trim()
+        .normalize("NFD")
+        .replace(/\p{Diacritic}/gu, "")
+        .split(/\s+/)
+        .map((t) => t.replace(/[\\%_]/g, (c) => `\\${c}`))
+        .filter(Boolean);
+      for (const t of tokens) {
+        q = q.ilike("nombre_unaccent", `%${t}%`);
+      }
     }
     if (opts.nivel) q = q.eq("nivel", opts.nivel);
     if (opts.area) q = q.eq("area_conocimiento", opts.area);
@@ -117,6 +136,40 @@ export class SupabaseResearcherRepository implements ResearcherRepository {
   async distinctValues(column: "area_conocimiento" | "entidad_final"): Promise<string[]> {
     const facet = await this.groupCount(column);
     return facet.map((f) => f.value);
+  }
+
+  async crossStateLevel(): Promise<StateLevelRow[]> {
+    const { data, error } = await this.client.rpc("cross_state_level");
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as Array<Record<string, string | number>>).map((r) => ({
+      entidad: String(r.entidad),
+      c: toNum(r.c),
+      n1: toNum(r.n1),
+      n2: toNum(r.n2),
+      n3: toNum(r.n3),
+      e: toNum(r.e),
+      total: toNum(r.total),
+    }));
+  }
+
+  async areaDisciplineBreakdown(): Promise<AreaDisciplineRow[]> {
+    const { data, error } = await this.client.rpc("area_discipline_breakdown");
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as Array<Record<string, string | number>>).map((r) => ({
+      area: String(r.area),
+      discipline: String(r.discipline),
+      subdiscipline: String(r.subdiscipline),
+      count: toNum(r.count),
+    }));
+  }
+
+  async countsByInstitution(): Promise<InstitutionCount[]> {
+    const { data, error } = await this.client.rpc("counts_by_institution");
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as Array<Record<string, string | number>>).map((r) => ({
+      institucion: String(r.institucion),
+      count: toNum(r.count),
+    }));
   }
 
   async countsByState(filters?: { area?: string }): Promise<StateCount[]> {

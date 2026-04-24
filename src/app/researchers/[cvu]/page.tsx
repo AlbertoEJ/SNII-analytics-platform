@@ -5,6 +5,13 @@ import { getLocale } from "@/presentation/i18n/getLocale";
 import { getMessages } from "@/presentation/i18n/messages";
 import { container } from "@/lib/container";
 import { SNII_LEVEL_LABELS } from "@/domain/value-objects/SniiLevel";
+import { STATE_DISPLAY_NAME, STATE_CODE_TO_DB_NAME } from "@/lib/mexico/stateNameMap";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { LevelBadge } from "@/presentation/components/LevelBadge";
+import { formatName, nameInitials } from "@/lib/formatName";
 
 export const revalidate = 3600;
 
@@ -24,7 +31,7 @@ export async function generateMetadata({
     .join(" · ");
 
   return {
-    title: `${r.nombre}${levelLabel ? ` · ${levelLabel}` : ""} · SNII`,
+    title: `${formatName(r.nombre)}${levelLabel ? ` · ${levelLabel}` : ""} · SNII`,
     description: description || `Investigador SNII (CVU ${r.cvu})`,
   };
 }
@@ -40,49 +47,219 @@ export default async function ResearcherDetailPage({
 
   const locale = await getLocale();
   const t = getMessages(locale);
-  const researcher = await container().getResearcherByCvu.execute(cvu);
-  if (!researcher) notFound();
+  const r = await container().getResearcherByCvu.execute(cvu);
+  if (!r) notFound();
 
-  const r = researcher;
   const dateFmt = (d: string | null) =>
-    d ? new Date(d).toLocaleDateString(locale === "es" ? "es-MX" : "en-US") : "—";
+    d ? new Date(d).toLocaleDateString(locale === "es" ? "es-MX" : "en-US") : null;
 
-  const rows: Array<[string, string | null]> = [
-    [t.researcher.cvu, String(r.cvu)],
-    [t.researcher.level, r.nivel ? SNII_LEVEL_LABELS[r.nivel][locale] : null],
-    [t.researcher.category, r.categoria],
-    [t.researcher.validity, `${dateFmt(r.fechaInicioVigencia)} — ${dateFmt(r.fechaFinVigencia)}`],
-    [t.researcher.area, r.areaConocimiento],
-    [t.researcher.discipline, r.disciplina],
-    [t.researcher.subdiscipline, r.subdisciplina],
-    [t.researcher.specialty, r.especialidad],
-    [t.researcher.institution, r.institucionFinal ?? r.institucionAcreditacion],
-    [t.researcher.department, r.dependenciaAcreditacion],
-    [t.researcher.state, r.entidadFinal ?? r.entidadAcreditacion],
-    [t.researcher.cpis, r.cpiS],
-  ];
+  const inicio = dateFmt(r.fechaInicioVigencia);
+  const fin = dateFmt(r.fechaFinVigencia);
+  const isActive = r.fechaFinVigencia ? new Date(r.fechaFinVigencia) >= new Date() : true;
+
+  const institucion = r.institucionFinal ?? r.institucionAcreditacion;
+  const entidad = r.entidadFinal ?? r.entidadAcreditacion;
+  const entidadDisplay = entidad
+    ? Object.entries(STATE_CODE_TO_DB_NAME).find(([, v]) => v === entidad)?.[0]
+    : undefined;
+  const entidadLabel = entidadDisplay
+    ? STATE_DISPLAY_NAME[Number(entidadDisplay)]
+    : entidad ?? "—";
+
+  const initials = nameInitials(r.nombre);
+  const displayName = formatName(r.nombre);
 
   return (
-    <article className="space-y-6 max-w-3xl mx-auto">
-      <Link href="/researchers" className="text-sm text-zinc-500 hover:underline">
-        {t.researcher.backToList}
-      </Link>
-      <header>
-        <h1 className="text-3xl font-semibold">{r.nombre}</h1>
-        {r.nivel && (
-          <span className="inline-block mt-2 px-3 py-1 rounded-full bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 text-xs font-medium">
-            {SNII_LEVEL_LABELS[r.nivel][locale]}
-          </span>
-        )}
-      </header>
-      <dl className="grid sm:grid-cols-[200px_1fr] gap-x-6 gap-y-3 text-sm bg-white dark:bg-zinc-900 p-6 rounded-lg border border-zinc-200 dark:border-zinc-800">
-        {rows.map(([k, v]) => (
-          <div key={k} className="contents">
-            <dt className="text-zinc-500">{k}</dt>
-            <dd className="font-medium">{v && v.trim() ? v : "—"}</dd>
+    <article className="space-y-5 max-w-5xl mx-auto">
+      {/* Back link */}
+      <div>
+        <Button
+          variant="ghost"
+          size="sm"
+          nativeButton={false}
+          className="h-7 px-2 -ml-2 text-xs text-muted-foreground"
+          render={
+            <Link href="/researchers">
+              <span aria-hidden className="mr-1">←</span>
+              {t.researcher.backToList}
+            </Link>
+          }
+        />
+      </div>
+
+      {/* Hero card */}
+      <Card className="py-0 overflow-hidden">
+        <CardContent className="p-6 sm:p-8">
+          <div className="flex items-start gap-5">
+            <span
+              aria-hidden
+              className="grid place-items-center w-16 h-16 rounded-2xl bg-foreground text-background text-xl font-semibold shrink-0"
+            >
+              {initials || "?"}
+            </span>
+            <div className="min-w-0 flex-1 space-y-3">
+              <div className="space-y-1">
+                <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight leading-tight">
+                  {displayName}
+                </h1>
+                <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                  <span className="tabular-nums">CVU {r.cvu}</span>
+                  {r.categoria && (
+                    <>
+                      <Separator orientation="vertical" className="!h-3" />
+                      <span>{r.categoria}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {r.nivel && <LevelBadge level={r.nivel} locale={locale} />}
+                {r.areaConocimiento && (
+                  <Badge variant="secondary" className="font-normal">
+                    {r.areaConocimiento}
+                  </Badge>
+                )}
+                {entidad && (
+                  <Badge variant="outline" className="font-normal">
+                    {entidadLabel}
+                  </Badge>
+                )}
+              </div>
+            </div>
           </div>
-        ))}
-      </dl>
+        </CardContent>
+      </Card>
+
+      {/* Vigencia banner */}
+      {(inicio || fin) && (
+        <Card className="py-0">
+          <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
+            <div className="flex items-center gap-3">
+              <span
+                aria-hidden
+                className={`w-2 h-2 rounded-full ${isActive ? "bg-emerald-500" : "bg-zinc-400"}`}
+              />
+              <div>
+                <div className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                  {t.researcher.validity}
+                </div>
+                <div className="text-sm font-medium tabular-nums">
+                  {inicio ?? "—"} <span className="text-muted-foreground">→</span> {fin ?? "—"}
+                </div>
+              </div>
+            </div>
+            {fin && (
+              <Badge variant={isActive ? "secondary" : "outline"} className="font-normal">
+                {isActive ? t.researcher.validUntil(fin) : t.researcher.expiredOn(fin)}
+              </Badge>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Two-column info */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        <InfoCard title={t.researcher.academic}>
+          <Row label={t.researcher.area} value={r.areaConocimiento} />
+          <Row label={t.researcher.discipline} value={r.disciplina} />
+          <Row label={t.researcher.subdiscipline} value={r.subdisciplina} />
+          <Row label={t.researcher.specialty} value={r.especialidad} />
+        </InfoCard>
+
+        <InfoCard title={t.researcher.affiliation}>
+          <Row label={t.researcher.institution} value={institucion} />
+          <Row label={t.researcher.department} value={r.dependenciaAcreditacion} />
+          <Row label={t.researcher.subDepartment} value={r.subdependenciaAcreditacion} />
+          <Row label={t.researcher.departmentSection} value={r.departamentoAcreditacion} />
+          <Row label={t.researcher.state} value={entidadLabel === "—" ? null : entidadLabel} />
+          <Row label={t.researcher.cpis} value={r.cpiS ? t.researcher.isCpis : null} />
+        </InfoCard>
+      </div>
+
+      {/* Actions */}
+      <Card className="py-0">
+        <CardHeader className="py-3 border-b">
+          <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            {t.researcher.actions}
+          </span>
+        </CardHeader>
+        <CardContent className="p-3 flex flex-wrap gap-2">
+          {entidad && (
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={
+                <Link href={`/?entidad=${encodeURIComponent(entidad)}`}>
+                  {t.researcher.viewOnMap}
+                </Link>
+              }
+            />
+          )}
+          {entidad && (
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={
+                <Link href={`/researchers?entidad=${encodeURIComponent(entidad)}`}>
+                  {t.researcher.othersFromState}
+                </Link>
+              }
+            />
+          )}
+          {r.areaConocimiento && (
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={
+                <Link href={`/researchers?area=${encodeURIComponent(r.areaConocimiento)}`}>
+                  {t.researcher.othersFromArea}
+                </Link>
+              }
+            />
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Notes (often present in the padron) */}
+      {r.notas && r.notas.trim() && (
+        <Card className="py-0">
+          <CardHeader className="py-3 border-b">
+            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+              {t.researcher.notes}
+            </span>
+          </CardHeader>
+          <CardContent className="p-4 text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed max-h-72 overflow-auto">
+            {r.notas}
+          </CardContent>
+        </Card>
+      )}
     </article>
+  );
+}
+
+function InfoCard({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <Card className="py-0">
+      <CardHeader className="py-3 border-b">
+        <span className="text-[11px] uppercase tracking-wider text-muted-foreground">{title}</span>
+      </CardHeader>
+      <CardContent className="p-0">
+        <dl className="divide-y">{children}</dl>
+      </CardContent>
+    </Card>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string | null | undefined }) {
+  return (
+    <div className="grid grid-cols-[140px_1fr] gap-3 px-4 py-2.5">
+      <dt className="text-xs text-muted-foreground">{label}</dt>
+      <dd className="text-sm font-medium break-words min-w-0">
+        {value && value.trim() ? value : <span className="text-muted-foreground">—</span>}
+      </dd>
+    </div>
   );
 }

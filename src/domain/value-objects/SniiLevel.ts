@@ -10,6 +10,14 @@ export const SNII_LEVEL_LABELS: Record<SniiLevelCode, { es: string; en: string }
   E: { es: "Emérito/a", en: "Emeritus" },
 };
 
+export const SNII_LEVEL_COLORS: Record<SniiLevelCode, string> = {
+  C: "#f59e0b",
+  "1": "#0ea5e9",
+  "2": "#8b5cf6",
+  "3": "#10b981",
+  E: "#f43f5e",
+};
+
 export function isValidSniiLevel(v: string | null | undefined): v is SniiLevelCode {
   return v != null && (SNII_LEVELS as string[]).includes(v);
 }

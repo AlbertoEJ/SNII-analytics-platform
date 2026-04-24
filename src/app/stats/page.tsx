@@ -2,83 +2,82 @@ import { getLocale } from "@/presentation/i18n/getLocale";
 import { getMessages } from "@/presentation/i18n/messages";
 import { container } from "@/lib/container";
 import { SNII_LEVEL_LABELS, isValidSniiLevel } from "@/domain/value-objects/SniiLevel";
+import { STATE_DISPLAY_NAME, STATE_CODE_TO_DB_NAME } from "@/lib/mexico/stateNameMap";
+import { Card, CardContent } from "@/components/ui/card";
+import { AnalysisTabs } from "@/presentation/components/AnalysisTabs";
 
 export const revalidate = 3600;
 
 export default async function StatsPage() {
   const locale = await getLocale();
   const t = getMessages(locale);
-  const stats = await container().getStats.execute();
+  const { getStats, getAnalysis } = container();
+
+  const [stats, stateLevel, areaBreakdown, institutions] = await Promise.all([
+    getStats.execute(),
+    getAnalysis.crossStateLevel(),
+    getAnalysis.areaDisciplineBreakdown(),
+    getAnalysis.countsByInstitution(),
+  ]);
+
+  const dbToDisplay: Record<string, string> = {};
+  for (const [code, dbName] of Object.entries(STATE_CODE_TO_DB_NAME)) {
+    dbToDisplay[dbName] = STATE_DISPLAY_NAME[Number(code)];
+  }
+
+  const overview = {
+    nivel: stats.byNivel.map((n) => ({
+      label: isValidSniiLevel(n.value) ? SNII_LEVEL_LABELS[n.value][locale] : n.value,
+      count: n.count,
+    })),
+    area: stats.byArea.map((a) => ({ label: a.value, count: a.count })),
+    entidad: stats.byEntidad.map((e) => ({
+      label: dbToDisplay[e.value] ?? e.value,
+      count: e.count,
+    })),
+  };
 
   return (
-    <div className="space-y-10">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold">{t.stats.title}</h1>
-        <p className="text-sm text-zinc-500">
-          {t.stats.total}: <span className="font-medium tabular-nums">{stats.total.toLocaleString()}</span>
-        </p>
+    <div className="space-y-6 max-w-[1400px] mx-auto">
+      <header className="flex flex-col gap-1">
+        <h1 className="text-2xl font-semibold tracking-tight">{t.stats.title}</h1>
+        <p className="text-sm text-muted-foreground">{t.stats.subtitle}</p>
       </header>
 
-      <Section title={t.stats.byLevel}>
-        <Bars
-          items={stats.byNivel.map((n) => ({
-            label: isValidSniiLevel(n.value) ? SNII_LEVEL_LABELS[n.value][locale] : n.value,
-            count: n.count,
-          }))}
-          total={stats.total}
-        />
-      </Section>
+      <Card className="py-0">
+        <CardContent className="p-5 flex items-baseline gap-3">
+          <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+            {t.stats.total}
+          </span>
+          <span className="text-3xl font-semibold tabular-nums">
+            {stats.total.toLocaleString()}
+          </span>
+        </CardContent>
+      </Card>
 
-      <Section title={t.stats.byArea}>
-        <Bars items={stats.byArea.map((a) => ({ label: a.value, count: a.count }))} total={stats.total} />
-      </Section>
-
-      <Section title={t.stats.byState}>
-        <Bars items={stats.byEntidad.slice(0, 32).map((e) => ({ label: e.value, count: e.count }))} total={stats.total} />
-      </Section>
+      <AnalysisTabs
+        total={stats.total}
+        overview={overview}
+        stateLevel={stateLevel}
+        areaBreakdown={areaBreakdown}
+        institutions={institutions}
+        dbToDisplay={dbToDisplay}
+        strings={{
+          tabs: t.stats.tabs,
+          byLevel: t.stats.byLevel,
+          byArea: t.stats.byArea,
+          byState: t.stats.byState,
+          overview: {
+            largest: t.stats.largest,
+            smallest: t.stats.smallest,
+            median: t.stats.median,
+            categories: t.stats.categories,
+          },
+          heatmap: t.stats.heatmap,
+          disciplines: t.stats.disciplines,
+          concentration: t.stats.concentration,
+        }}
+      />
     </div>
-  );
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <section className="space-y-3">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      {children}
-    </section>
-  );
-}
-
-function Bars({ items, total }: { items: Array<{ label: string; count: number }>; total: number }) {
-  const max = Math.max(...items.map((i) => i.count), 1);
-  return (
-    <ul className="space-y-1.5">
-      {items.map((i) => {
-        const pct = (i.count / max) * 100;
-        const labelInside = pct >= 35;
-        return (
-          <li key={i.label} className="grid grid-cols-[1fr_auto] items-center gap-3 text-sm">
-            <div className="relative h-6 bg-zinc-100 dark:bg-zinc-800 rounded overflow-hidden">
-              <div
-                className="absolute inset-y-0 left-0 bg-zinc-900 dark:bg-white"
-                style={{ width: `${pct}%` }}
-              />
-              <span
-                className={`absolute inset-y-0 flex items-center px-2 text-xs whitespace-nowrap ${
-                  labelInside
-                    ? "left-0 text-white dark:text-zinc-900"
-                    : "left-full ml-2 text-zinc-700 dark:text-zinc-300"
-                }`}
-              >
-                {i.label}
-              </span>
-            </div>
-            <div className="text-xs text-zinc-600 dark:text-zinc-400 tabular-nums whitespace-nowrap">
-              {i.count.toLocaleString()} · {((i.count / total) * 100).toFixed(1)}%
-            </div>
-          </li>
-        );
-      })}
-    </ul>
   );
 }
