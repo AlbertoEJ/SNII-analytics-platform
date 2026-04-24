@@ -1,6 +1,7 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 import { intensityShade, type PaletteName } from "./palette";
 
 export interface RankedRow {
@@ -17,14 +18,15 @@ type Props = {
   total: number;
   maxHeight?: number;
   showIndex?: boolean;
+  locale?: string;
 } & (
   | { mode: "categorical" }
   | { mode: "intensity"; palette: PaletteName }
 );
 
 export function IntensityBarList(props: Props) {
-  const { rows, total, maxHeight = 640, showIndex = true } = props;
-  const max = rows[0]?.count ?? 1;
+  const { rows, total, maxHeight = 640, showIndex = true, locale } = props;
+  const max = rows[0]?.count ?? 0;
 
   return (
     <Card className="py-0 overflow-hidden">
@@ -55,14 +57,14 @@ export function IntensityBarList(props: Props) {
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-sm font-medium tabular-nums">
-                        {row.count.toLocaleString()}
+                        {row.count.toLocaleString(locale)}
                       </span>
                       <span className="text-[10px] text-muted-foreground tabular-nums w-12 text-right">
                         {pct.toFixed(1)}%
                       </span>
                     </div>
                   </div>
-                  <div className={showIndex ? "ml-7 h-1.5 rounded-full bg-muted overflow-hidden" : "h-1.5 rounded-full bg-muted overflow-hidden"}>
+                  <div className={cn("h-1.5 rounded-full bg-muted overflow-hidden", showIndex && "ml-7")}>
                     <div
                       className="h-full"
                       style={{ width: `${barPct}%`, backgroundColor: barColor }}
