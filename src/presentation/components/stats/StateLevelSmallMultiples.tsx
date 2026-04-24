@@ -30,7 +30,7 @@ export function StateLevelSmallMultiples({ rows, dbToDisplay, title, subtitle, l
   return (
     <section className="space-y-3">
       <header>
-        <h2 className="text-base font-semibold">{title}</h2>
+        <h3 className="text-base font-semibold">{title}</h3>
         <p className="text-xs text-muted-foreground">{subtitle}</p>
       </header>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -43,7 +43,7 @@ export function StateLevelSmallMultiples({ rows, dbToDisplay, title, subtitle, l
                 <div className="flex items-baseline justify-between gap-2">
                   <span className="text-sm font-medium truncate" title={display}>{display}</span>
                   <span className="text-xs tabular-nums text-muted-foreground">
-                    {row.total.toLocaleString()}
+                    {row.total.toLocaleString(locale === "es" ? "es-MX" : "en-US")}
                   </span>
                 </div>
                 <div
@@ -63,7 +63,7 @@ export function StateLevelSmallMultiples({ rows, dbToDisplay, title, subtitle, l
                       <div
                         key={code}
                         style={{ width: `${pct}%`, backgroundColor: SNII_LEVEL_COLORS[code] }}
-                        title={`${SNII_LEVEL_LABELS[code][locale]}: ${value.toLocaleString()} (${pct.toFixed(1)}%)`}
+                        title={`${SNII_LEVEL_LABELS[code][locale]}: ${value.toLocaleString(locale === "es" ? "es-MX" : "en-US")} (${pct.toFixed(1)}%)`}
                       />
                     );
                   })}
