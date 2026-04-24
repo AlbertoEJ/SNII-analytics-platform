@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getLocale } from "@/presentation/i18n/getLocale";
@@ -6,6 +7,27 @@ import { container } from "@/lib/container";
 import { SNII_LEVEL_LABELS } from "@/domain/value-objects/SniiLevel";
 
 export const revalidate = 3600;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ cvu: string }>;
+}): Promise<Metadata> {
+  const { cvu: cvuStr } = await params;
+  if (!/^\d+$/.test(cvuStr)) return { title: "Investigador" };
+  const r = await container().getResearcherByCvu.execute(Number.parseInt(cvuStr, 10));
+  if (!r) return { title: "Investigador no encontrado" };
+
+  const levelLabel = r.nivel ? SNII_LEVEL_LABELS[r.nivel].es : null;
+  const description = [r.areaConocimiento, r.institucionFinal, r.entidadFinal]
+    .filter(Boolean)
+    .join(" · ");
+
+  return {
+    title: `${r.nombre}${levelLabel ? ` · ${levelLabel}` : ""} · SNII`,
+    description: description || `Investigador SNII (CVU ${r.cvu})`,
+  };
+}
 
 export default async function ResearcherDetailPage({
   params,

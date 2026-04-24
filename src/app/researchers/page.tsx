@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getLocale } from "@/presentation/i18n/getLocale";
 import { getMessages } from "@/presentation/i18n/messages";
@@ -7,6 +8,26 @@ import { SNII_LEVELS, SNII_LEVEL_LABELS, isValidSniiLevel } from "@/domain/value
 const PAGE_SIZE = 25;
 
 export const revalidate = 3600;
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [k: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const parts = ["Investigadores"];
+  if (typeof sp.nivel === "string" && isValidSniiLevel(sp.nivel)) {
+    parts.push(SNII_LEVEL_LABELS[sp.nivel].es);
+  }
+  if (typeof sp.entidad === "string" && sp.entidad) parts.push(sp.entidad);
+  if (typeof sp.area === "string" && sp.area) parts.push(sp.area);
+  if (typeof sp.q === "string" && sp.q.trim()) parts.push(`"${sp.q.trim()}"`);
+  return {
+    title: `${parts.join(" · ")} · SNII`,
+    description:
+      "Buscador del padrón SNII (Sistema Nacional de Investigadoras e Investigadores).",
+  };
+}
 
 export default async function ResearchersPage({
   searchParams,
