@@ -74,51 +74,48 @@ export const messages = {
     stats: {
       title: "Análisis del padrón",
       subtitle: "Sistema Nacional de Investigadoras e Investigadores",
-      total: "Total de investigadores",
+      headline: {
+        total: "Total",
+        totalCaption: "Investigadoras e investigadores en el SNII.",
+        topState: "Entidad con más investigadores",
+        topStateCaption: (name: string, share: string) =>
+          `1 de cada ${share} investigadores está en ${name}.`,
+        topInstitution: "Institución con más investigadores",
+        topInstitutionCaption: (name: string, share: string) =>
+          `${name} concentra el ${share} del total.`,
+        topArea: "Área más numerosa",
+        topAreaCaption: (name: string, share: string) =>
+          `${name} agrupa al ${share} del padrón.`,
+      },
       tabs: {
-        overview: "Resumen",
-        distribution: "Distribución",
-        disciplines: "Disciplinas",
-        concentration: "Concentración",
+        count: "¿Cuántos?",
+        place: "¿Dónde?",
+        field: "¿En qué?",
       },
-      byLevel: "Por nivel",
-      byArea: "Por área",
-      byState: "Por entidad",
-      categories: "categorías",
-      largest: "Mayor",
-      smallest: "Menor",
-      median: "Mediana",
-      heatmap: {
-        title: "Composición por entidad y nivel",
-        subtitle: "Cada celda muestra el porcentaje de investigadores de esa entidad en cada nivel.",
-        state: "Entidad",
+      count: {
+        summaryTitle: "Resumen",
+        rankingTitle: "Distribución por nivel",
+        bulletTotal: (n: string) => `${n} investigadoras e investigadores en total.`,
+        bulletTopTier: (pct: string) => `${pct} están en nivel III o Emérito/a.`,
+        bulletCandidates: (pct: string) => `${pct} son candidatas/os.`,
+        bulletLevels: (n: number) => `${n} niveles distintos representados.`,
       },
-      disciplines: {
-        title: "Áreas, disciplinas y subdisciplinas",
-        subtitle: "Profundiza en la estructura del padrón. Haz clic para expandir.",
-        researchers: "investigadores",
+      place: {
+        rankingTitle: "Ranking de entidades",
+        concentrationLine: (n: number, share: string) =>
+          `Las ${n} entidades con más investigadores concentran el ${share} del total.`,
+        smallMultiples: {
+          title: "Composición por nivel en cada entidad",
+          subtitle: "Cada tarjeta muestra cómo se reparten los niveles dentro de una entidad.",
+        },
       },
-      concentration: {
-        title: "Concentración del padrón",
-        subtitle:
-          "Qué tan concentrado o disperso está el padrón. Valores altos indican que pocas entidades acumulan a la mayoría.",
-        hhi: "Índice HHI",
-        hhiHint: "0 = totalmente distribuido · 1 = todo en una sola entidad",
-        topShareTop3: "Concentración del Top 3",
-        topShareTop5: "Concentración del Top 5",
-        topShareHintTop3: "Porcentaje del padrón en las 3 mayores.",
-        dominance: "Razón de dominancia",
-        dominanceHint: "Cuántas veces es mayor el #1 que la mediana.",
-        byState: "Por entidad",
-        byInstitution: "Por institución",
-        interpretation: "Interpretación",
-        verticeTemplate:
-          "El padrón es altamente concentrado: {entity} concentra {share} y el HHI alcanza {hhi}.",
-        moderateTemplate:
-          "Concentración moderada: {entity} encabeza con {share} y el HHI es {hhi}.",
-        dispersedTemplate:
-          "Distribución relativamente dispersa: {entity} es la mayor con solo {share} y el HHI es {hhi}.",
-        topShort: "Top-5",
+      field: {
+        areaTitle: "Áreas del conocimiento",
+        treemapTitle: "Áreas, disciplinas y subdisciplinas",
+        treemapSubtitle: "Profundiza en la estructura del padrón. Haz clic para expandir.",
+        institutionTitle: "Instituciones",
+        institutionConcentration: (n: number, share: string) =>
+          `Las ${n} instituciones con más investigadores concentran el ${share} del total.`,
       },
     },
     map: {
@@ -215,51 +212,48 @@ export const messages = {
     stats: {
       title: "Roll analysis",
       subtitle: "National System of Researchers",
-      total: "Total researchers",
+      headline: {
+        total: "Total",
+        totalCaption: "Researchers in the SNII.",
+        topState: "Top state",
+        topStateCaption: (name: string, share: string) =>
+          `1 in ${share} researchers is in ${name}.`,
+        topInstitution: "Top institution",
+        topInstitutionCaption: (name: string, share: string) =>
+          `${name} holds ${share} of the total.`,
+        topArea: "Largest knowledge area",
+        topAreaCaption: (name: string, share: string) =>
+          `${name} accounts for ${share} of the roll.`,
+      },
       tabs: {
-        overview: "Overview",
-        distribution: "Distribution",
-        disciplines: "Disciplines",
-        concentration: "Concentration",
+        count: "How many?",
+        place: "Where?",
+        field: "In what fields?",
       },
-      byLevel: "By level",
-      byArea: "By area",
-      byState: "By state",
-      categories: "categories",
-      largest: "Largest",
-      smallest: "Smallest",
-      median: "Median",
-      heatmap: {
-        title: "Composition by state and level",
-        subtitle: "Each cell shows the percentage of that state's researchers at each level.",
-        state: "State",
+      count: {
+        summaryTitle: "Summary",
+        rankingTitle: "Distribution by level",
+        bulletTotal: (n: string) => `${n} researchers in total.`,
+        bulletTopTier: (pct: string) => `${pct} are at level III or Emeritus.`,
+        bulletCandidates: (pct: string) => `${pct} are candidates.`,
+        bulletLevels: (n: number) => `${n} distinct levels represented.`,
       },
-      disciplines: {
-        title: "Areas, disciplines and subdisciplines",
-        subtitle: "Drill into the roll's structure. Click to expand.",
-        researchers: "researchers",
+      place: {
+        rankingTitle: "State ranking",
+        concentrationLine: (n: number, share: string) =>
+          `The top ${n} states hold ${share} of all researchers.`,
+        smallMultiples: {
+          title: "Level composition within each state",
+          subtitle: "Each card shows how SNII levels are distributed inside a state.",
+        },
       },
-      concentration: {
-        title: "Roll concentration",
-        subtitle:
-          "How concentrated or dispersed the roll is. High values mean few entities hold the majority.",
-        hhi: "HHI Index",
-        hhiHint: "0 = fully distributed · 1 = everything in one entity",
-        topShareTop3: "Top 3 share",
-        topShareTop5: "Top 5 share",
-        topShareHintTop3: "Share of the roll held by the top 3.",
-        dominance: "Dominance ratio",
-        dominanceHint: "How many times larger #1 is than the median.",
-        byState: "By state",
-        byInstitution: "By institution",
-        interpretation: "Interpretation",
-        verticeTemplate:
-          "Highly concentrated: {entity} holds {share} and HHI reaches {hhi}.",
-        moderateTemplate:
-          "Moderately concentrated: {entity} leads with {share} and HHI is {hhi}.",
-        dispersedTemplate:
-          "Relatively dispersed: {entity} is the largest with only {share} and HHI is {hhi}.",
-        topShort: "Top-5",
+      field: {
+        areaTitle: "Knowledge areas",
+        treemapTitle: "Areas, disciplines and subdisciplines",
+        treemapSubtitle: "Drill into the roll's structure. Click to expand.",
+        institutionTitle: "Institutions",
+        institutionConcentration: (n: number, share: string) =>
+          `The top ${n} institutions hold ${share} of all researchers.`,
       },
     },
     map: {
