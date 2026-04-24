@@ -49,6 +49,10 @@ interface Props {
   rows: AreaDisciplineRow[];
   title: string;
   subtitle: string;
+  rootLabel: string;
+  backLabel: string;
+  researchersLabel: string;
+  locale?: string;
   width?: number;
   height?: number;
 }
@@ -116,6 +120,10 @@ export function DisciplineTreemap({
   rows,
   title,
   subtitle,
+  rootLabel,
+  backLabel,
+  researchersLabel,
+  locale,
   width = 1000,
   height = 560,
 }: Props) {
@@ -172,14 +180,14 @@ export function DisciplineTreemap({
             className="h-7 px-2 text-xs"
             onClick={() => setFocus(null)}
           >
-            ← Volver
+            {backLabel}
           </Button>
         )}
       </CardHeader>
       <CardContent className="p-3">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground min-h-[20px]">
-          <span className="font-medium text-foreground">Áreas</span>
+          <span className="font-medium text-foreground">{rootLabel}</span>
           {focus && (
             <>
               <span>›</span>
@@ -187,7 +195,7 @@ export function DisciplineTreemap({
             </>
           )}
           <span className="ml-auto tabular-nums">
-            {total.toLocaleString()} investigadores
+            {total.toLocaleString(locale)} {researchersLabel}
           </span>
         </div>
 
@@ -203,6 +211,7 @@ export function DisciplineTreemap({
                 node={node}
                 onAreaClick={!focus ? (name) => setFocus(name) : undefined}
                 total={total}
+                locale={locale}
               />
             ))}
           </svg>
@@ -216,10 +225,12 @@ function TreemapCell({
   node,
   onAreaClick,
   total,
+  locale,
 }: {
   node: HierarchyRectangularNode<Datum>;
   onAreaClick?: (name: string) => void;
   total: number;
+  locale?: string;
 }) {
   const w = node.x1 - node.x0;
   const h = node.y1 - node.y0;
@@ -263,10 +274,10 @@ function TreemapCell({
           opacity={0.85}
           style={{ pointerEvents: "none" }}
         >
-          {value.toLocaleString()} · {pct.toFixed(1)}%
+          {value.toLocaleString(locale)} · {pct.toFixed(1)}%
         </text>
       )}
-      <title>{`${node.data.name}: ${value.toLocaleString()} (${pct.toFixed(1)}%)`}</title>
+      <title>{`${node.data.name}: ${value.toLocaleString(locale)} (${pct.toFixed(1)}%)`}</title>
     </g>
   );
 

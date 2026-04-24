@@ -49,6 +49,7 @@ export default async function StatsPage() {
   const countStrings = {
     summaryTitle: t.stats.count.summaryTitle,
     rankingTitle: t.stats.count.rankingTitle,
+    donutAriaLabel: t.stats.count.donutAriaLabel,
     summaryBullets: [
       t.stats.count.bulletTotal(fmtNum(total)),
       t.stats.count.bulletTopTier(fmtPct(total > 0 ? topTierCount / total : 0)),
@@ -87,6 +88,9 @@ export default async function StatsPage() {
     areaTitle: t.stats.field.areaTitle,
     treemapTitle: t.stats.field.treemapTitle,
     treemapSubtitle: t.stats.field.treemapSubtitle,
+    treemapRootLabel: t.stats.field.treemapRoot,
+    treemapBackLabel: t.stats.field.treemapBack,
+    treemapResearchersLabel: t.stats.field.treemapResearchers,
     institutionTitle: t.stats.field.institutionTitle,
     institutionConcentration: t.stats.field.institutionConcentration(
       institutionShare.n,

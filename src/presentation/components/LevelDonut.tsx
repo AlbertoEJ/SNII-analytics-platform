@@ -14,6 +14,8 @@ interface Props {
   width?: number;
   height?: number;
   centerLabel?: string;
+  ariaLabel?: string;
+  locale?: string;
 }
 
 export function LevelDonut({
@@ -22,6 +24,8 @@ export function LevelDonut({
   width = 220,
   height = 220,
   centerLabel,
+  ariaLabel,
+  locale,
 }: Props) {
   const radius = Math.min(width, height) / 2;
   const inner = radius * 0.6;
@@ -48,12 +52,12 @@ export function LevelDonut({
         className="block"
         style={{ width, height }}
         role="img"
-        aria-label="Distribución por nivel"
+        aria-label={ariaLabel}
       >
         <g>
           {arcs.map(({ slice, d }) => (
             <path key={slice.label} d={d} fill={slice.color}>
-              <title>{`${slice.label}: ${slice.count.toLocaleString()} (${((slice.count / total) * 100).toFixed(1)}%)`}</title>
+              <title>{`${slice.label}: ${slice.count.toLocaleString(locale)} (${((slice.count / total) * 100).toFixed(1)}%)`}</title>
             </path>
           ))}
         </g>
@@ -68,7 +72,7 @@ export function LevelDonut({
               fill="currentColor"
               className="tabular-nums"
             >
-              {total.toLocaleString()}
+              {total.toLocaleString(locale)}
             </text>
             <text
               textAnchor="middle"

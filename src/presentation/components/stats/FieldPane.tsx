@@ -8,6 +8,9 @@ interface Strings {
   areaTitle: string;
   treemapTitle: string;
   treemapSubtitle: string;
+  treemapRootLabel: string;
+  treemapBackLabel: string;
+  treemapResearchersLabel: string;
   institutionTitle: string;
   institutionConcentration: string; // pre-rendered
 }
@@ -43,7 +46,15 @@ export function FieldPane({ total, areaRows, institutions, locale, strings }: Pr
         <IntensityBarList rows={areaRanking} total={total} mode="intensity" palette="area" locale={locale} />
       </section>
 
-      <DisciplineTreemap rows={areaRows} title={strings.treemapTitle} subtitle={strings.treemapSubtitle} />
+      <DisciplineTreemap
+        rows={areaRows}
+        title={strings.treemapTitle}
+        subtitle={strings.treemapSubtitle}
+        rootLabel={strings.treemapRootLabel}
+        backLabel={strings.treemapBackLabel}
+        researchersLabel={strings.treemapResearchersLabel}
+        locale={locale}
+      />
 
       <section className="space-y-2">
         <h3 className="text-base font-semibold">{strings.institutionTitle}</h3>

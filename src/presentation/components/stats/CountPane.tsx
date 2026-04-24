@@ -13,6 +13,7 @@ export interface LevelFacet {
 interface Strings {
   rankingTitle: string;
   summaryTitle: string;
+  donutAriaLabel: string;
   summaryBullets: string[]; // pre-rendered, localized
 }
 
@@ -48,7 +49,15 @@ export function CountPane({ total, levels, locale, strings }: Props) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <Card className="py-6">
           <CardContent className="flex justify-center">
-            <LevelDonut total={total} slices={donutSlices} width={260} height={260} centerLabel="" />
+            <LevelDonut
+              total={total}
+              slices={donutSlices}
+              width={260}
+              height={260}
+              centerLabel=""
+              ariaLabel={strings.donutAriaLabel}
+              locale={locale}
+            />
           </CardContent>
         </Card>
         <Card className="py-0">

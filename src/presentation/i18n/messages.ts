@@ -95,6 +95,7 @@ export const messages = {
       count: {
         summaryTitle: "Resumen",
         rankingTitle: "Distribución por nivel",
+        donutAriaLabel: "Distribución por nivel",
         bulletTotal: (n: string) => `${n} investigadoras e investigadores en total.`,
         bulletTopTier: (pct: string) => `${pct} están en nivel III o Emérito/a.`,
         bulletCandidates: (pct: string) => `${pct} son candidatas/os.`,
@@ -113,6 +114,9 @@ export const messages = {
         areaTitle: "Áreas del conocimiento",
         treemapTitle: "Áreas, disciplinas y subdisciplinas",
         treemapSubtitle: "Profundiza en la estructura del padrón. Haz clic para expandir.",
+        treemapRoot: "Áreas",
+        treemapBack: "← Volver",
+        treemapResearchers: "investigadores",
         institutionTitle: "Instituciones",
         institutionConcentration: (n: number, share: string) =>
           `Las ${n} instituciones con más investigadores concentran el ${share} del total.`,
@@ -233,6 +237,7 @@ export const messages = {
       count: {
         summaryTitle: "Summary",
         rankingTitle: "Distribution by level",
+        donutAriaLabel: "Distribution by level",
         bulletTotal: (n: string) => `${n} researchers in total.`,
         bulletTopTier: (pct: string) => `${pct} are at level III or Emeritus.`,
         bulletCandidates: (pct: string) => `${pct} are candidates.`,
@@ -251,6 +256,9 @@ export const messages = {
         areaTitle: "Knowledge areas",
         treemapTitle: "Areas, disciplines and subdisciplines",
         treemapSubtitle: "Drill into the roll's structure. Click to expand.",
+        treemapRoot: "Areas",
+        treemapBack: "← Back",
+        treemapResearchers: "researchers",
         institutionTitle: "Institutions",
         institutionConcentration: (n: number, share: string) =>
           `The top ${n} institutions hold ${share} of all researchers.`,
