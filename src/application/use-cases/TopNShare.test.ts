@@ -44,6 +44,8 @@ describe("topNShare", () => {
     const snapshot = [...input];
     topNShare(input, 1);
     expect(input).toEqual(snapshot);
+    expect(input[0]).toBe(snapshot[0]);
+    expect(input[1]).toBe(snapshot[1]);
   });
 
   it("treats n <= 0 as zero-length top", () => {

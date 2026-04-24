@@ -8,7 +8,7 @@ export interface TopNShareResult {
   total: number;
   topCount: number;
   share: number;
-  entities: TopNInput[];
+  entities: readonly TopNInput[];
 }
 
 export function topNShare(items: readonly TopNInput[], n: number): TopNShareResult {
