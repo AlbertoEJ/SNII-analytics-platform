@@ -4,23 +4,26 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const schema = process.env.SNII_DB_SCHEMA ?? "snii";
 
-// We use untyped clients because the generated DB types live in a non-public
-// schema; a generic `SupabaseClient` is sufficient for our hand-written mappers.
 export type SnSupabaseClient = SupabaseClient<any, any, any, any, any>;
 
-let browserClient: SnSupabaseClient | null = null;
-
-export function getBrowserClient(): SnSupabaseClient {
-  if (!browserClient) {
-    browserClient = createClient(url, anonKey, { db: { schema } }) as SnSupabaseClient;
-  }
-  return browserClient;
+/** Server-side read client. Uses the anon key so RLS still applies. */
+export function getReadClient(): SnSupabaseClient {
+  return createClient(url, anonKey, {
+    db: { schema },
+    auth: { persistSession: false, autoRefreshToken: false },
+  }) as SnSupabaseClient;
 }
 
-export function getServerClient(): SnSupabaseClient {
+/**
+ * Service-role client. Bypasses RLS — use only for trusted admin paths
+ * (the Excel importer). Throws if the service-role key is not configured.
+ */
+export function getAdminClient(): SnSupabaseClient {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  const key = serviceKey ?? anonKey;
-  return createClient(url, key, {
+  if (!serviceKey) {
+    throw new Error("SUPABASE_SERVICE_ROLE_KEY is required for the admin client");
+  }
+  return createClient(url, serviceKey, {
     db: { schema },
     auth: { persistSession: false, autoRefreshToken: false },
   }) as SnSupabaseClient;

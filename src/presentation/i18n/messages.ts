@@ -53,6 +53,13 @@ export const messages = {
       reset: "Quitar filtro",
       showingArea: (a: string) => `Mostrando: ${a}`,
     },
+    error: {
+      title: "Algo salió mal",
+      body: "Ocurrió un error al cargar la información. Por favor intenta de nuevo.",
+      retry: "Reintentar",
+      home: "Ir al inicio",
+    },
+    loading: "Cargando…",
   },
   en: {
     appName: "SNII Platform",
@@ -104,6 +111,13 @@ export const messages = {
       reset: "Clear filter",
       showingArea: (a: string) => `Showing: ${a}`,
     },
+    error: {
+      title: "Something went wrong",
+      body: "An error occurred while loading the page. Please try again.",
+      retry: "Retry",
+      home: "Go home",
+    },
+    loading: "Loading…",
   },
 } as const;
 

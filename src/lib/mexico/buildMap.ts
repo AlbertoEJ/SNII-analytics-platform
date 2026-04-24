@@ -4,20 +4,7 @@ import { join } from "node:path";
 import { geoMercator, geoPath } from "d3-geo";
 import type { Feature, FeatureCollection, Geometry } from "geojson";
 import { STATE_CODE_TO_DB_NAME, STATE_DISPLAY_NAME } from "./stateNameMap";
-
-export interface StateShape {
-  code: number;
-  dbName: string;
-  displayName: string;
-  path: string;
-  centroid: [number, number];
-}
-
-export interface BuiltMap {
-  width: number;
-  height: number;
-  shapes: StateShape[];
-}
+import { MAP_HEIGHT, MAP_WIDTH, type BuiltMap, type StateShape } from "./types";
 
 interface StateProps {
   state_code: number;
@@ -26,13 +13,13 @@ interface StateProps {
 
 let cache: BuiltMap | null = null;
 
-export async function buildMexicoMap(width = 800, height = 480): Promise<BuiltMap> {
-  if (cache && cache.width === width && cache.height === height) return cache;
+export async function buildMexicoMap(): Promise<BuiltMap> {
+  if (cache) return cache;
 
   const file = await readFile(join(process.cwd(), "public", "mexico-states.json"), "utf8");
   const fc = JSON.parse(file) as FeatureCollection<Geometry, StateProps>;
 
-  const projection = geoMercator().fitSize([width, height], fc);
+  const projection = geoMercator().fitSize([MAP_WIDTH, MAP_HEIGHT], fc);
   const path = geoPath(projection);
 
   const shapes: StateShape[] = fc.features.map((f: Feature<Geometry, StateProps>) => {
@@ -46,6 +33,6 @@ export async function buildMexicoMap(width = 800, height = 480): Promise<BuiltMa
     };
   });
 
-  cache = { width, height, shapes };
+  cache = { width: MAP_WIDTH, height: MAP_HEIGHT, shapes };
   return cache;
 }

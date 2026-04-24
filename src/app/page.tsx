@@ -5,22 +5,27 @@ import { container } from "@/lib/container";
 import { buildMexicoMap } from "@/lib/mexico/buildMap";
 import { MexicoMap } from "@/presentation/components/MexicoMap";
 
+export const revalidate = 3600;
+
 export default async function Home({
   searchParams,
 }: {
   searchParams: Promise<{ [k: string]: string | string[] | undefined }>;
 }) {
   const sp = await searchParams;
-  const area = typeof sp.area === "string" && sp.area.trim() ? sp.area : undefined;
+  const rawArea = typeof sp.area === "string" && sp.area.trim() ? sp.area : undefined;
 
   const locale = await getLocale();
   const t = getMessages(locale);
   const { getStats, getCountsByState, repo } = container();
-  const [stats, stateCounts, areas, mapData] = await Promise.all([
+  const [areas, mapData] = await Promise.all([
+    repo.distinctValues("area_conocimiento"),
+    buildMexicoMap(),
+  ]);
+  const area = rawArea && areas.includes(rawArea) ? rawArea : undefined;
+  const [stats, stateCounts] = await Promise.all([
     getStats.execute(),
     getCountsByState.execute({ area }),
-    repo.distinctValues("area_conocimiento"),
-    buildMexicoMap(800, 480),
   ]);
 
   const counts: Record<string, number> = {};
@@ -120,3 +125,4 @@ function Stat({ label, value }: { label: string; value: number }) {
     </div>
   );
 }
+

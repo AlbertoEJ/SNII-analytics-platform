@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { scaleQuantize } from "d3-scale";
 import { interpolateBlues } from "d3-scale-chromatic";
-import type { StateShape } from "@/lib/mexico/buildMap";
+import type { StateShape } from "@/lib/mexico/types";
 
 interface Props {
   width: number;

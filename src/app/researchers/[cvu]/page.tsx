@@ -5,14 +5,16 @@ import { getMessages } from "@/presentation/i18n/messages";
 import { container } from "@/lib/container";
 import { SNII_LEVEL_LABELS } from "@/domain/value-objects/SniiLevel";
 
+export const revalidate = 3600;
+
 export default async function ResearcherDetailPage({
   params,
 }: {
   params: Promise<{ cvu: string }>;
 }) {
   const { cvu: cvuStr } = await params;
+  if (!/^\d+$/.test(cvuStr)) notFound();
   const cvu = Number.parseInt(cvuStr, 10);
-  if (!Number.isFinite(cvu)) notFound();
 
   const locale = await getLocale();
   const t = getMessages(locale);

@@ -6,6 +6,8 @@ import { SNII_LEVELS, SNII_LEVEL_LABELS, isValidSniiLevel } from "@/domain/value
 
 const PAGE_SIZE = 25;
 
+export const revalidate = 3600;
+
 export default async function ResearchersPage({
   searchParams,
 }: {
@@ -17,20 +19,22 @@ export default async function ResearchersPage({
 
   const query = typeof sp.q === "string" ? sp.q : "";
   const nivel = typeof sp.nivel === "string" && isValidSniiLevel(sp.nivel) ? sp.nivel : undefined;
-  const area = typeof sp.area === "string" ? sp.area : undefined;
-  const entidad = typeof sp.entidad === "string" ? sp.entidad : undefined;
+  const rawArea = typeof sp.area === "string" ? sp.area : undefined;
+  const rawEntidad = typeof sp.entidad === "string" ? sp.entidad : undefined;
   const page = Math.max(1, parseInt((typeof sp.page === "string" ? sp.page : "1"), 10) || 1);
 
   const { searchResearchers, repo } = container();
-  const [result, areas, entidades] = await Promise.all([
-    searchResearchers.execute({
-      query, nivel, area, entidad,
-      limit: PAGE_SIZE,
-      offset: (page - 1) * PAGE_SIZE,
-    }),
+  const [areas, entidades] = await Promise.all([
     repo.distinctValues("area_conocimiento"),
     repo.distinctValues("entidad_final"),
   ]);
+  const area = rawArea && areas.includes(rawArea) ? rawArea : undefined;
+  const entidad = rawEntidad && entidades.includes(rawEntidad) ? rawEntidad : undefined;
+  const result = await searchResearchers.execute({
+    query, nivel, area, entidad,
+    limit: PAGE_SIZE,
+    offset: (page - 1) * PAGE_SIZE,
+  });
 
   const totalPages = Math.max(1, Math.ceil(result.total / PAGE_SIZE));
 

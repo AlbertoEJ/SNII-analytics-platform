@@ -74,7 +74,8 @@ export class SupabaseResearcherRepository implements ResearcherRepository {
       .range(opts.offset, opts.offset + opts.limit - 1);
 
     if (opts.query?.trim()) {
-      q = q.ilike("nombre", `%${opts.query.trim()}%`);
+      const escaped = opts.query.trim().replace(/[\\%_]/g, (c) => `\\${c}`);
+      q = q.ilike("nombre", `%${escaped}%`);
     }
     if (opts.nivel) q = q.eq("nivel", opts.nivel);
     if (opts.area) q = q.eq("area_conocimiento", opts.area);
