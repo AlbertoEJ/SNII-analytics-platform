@@ -153,9 +153,10 @@ export class SupabaseResearcherRepository implements ResearcherRepository {
   }
 
   async areaDisciplineBreakdown(): Promise<AreaDisciplineRow[]> {
-    const { data, error } = await this.client.rpc("area_discipline_breakdown");
-    if (error) throw new Error(error.message);
-    return ((data ?? []) as Array<Record<string, string | number>>).map((r) => ({
+    // PostgREST caps RPC responses at the configured max-rows (default 1000).
+    // The breakdown returns ~4k rows; pull the full set in pages and concatenate.
+    const all = await this.fetchAllRpcRows<Record<string, string | number>>("area_discipline_breakdown");
+    return all.map((r) => ({
       area: String(r.area),
       discipline: String(r.discipline),
       subdiscipline: String(r.subdiscipline),
@@ -164,12 +165,26 @@ export class SupabaseResearcherRepository implements ResearcherRepository {
   }
 
   async countsByInstitution(): Promise<InstitutionCount[]> {
-    const { data, error } = await this.client.rpc("counts_by_institution");
-    if (error) throw new Error(error.message);
-    return ((data ?? []) as Array<Record<string, string | number>>).map((r) => ({
+    const all = await this.fetchAllRpcRows<Record<string, string | number>>("counts_by_institution");
+    return all.map((r) => ({
       institucion: String(r.institucion),
       count: toNum(r.count),
     }));
+  }
+
+  private async fetchAllRpcRows<T>(fn: string, args?: Record<string, unknown>): Promise<T[]> {
+    const pageSize = 1000;
+    const out: T[] = [];
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await this.client
+        .rpc(fn, args ?? {})
+        .range(from, from + pageSize - 1);
+      if (error) throw new Error(error.message);
+      const page = (data ?? []) as T[];
+      out.push(...page);
+      if (page.length < pageSize) break;
+    }
+    return out;
   }
 
   async countsByState(filters?: { area?: string }): Promise<StateCount[]> {
