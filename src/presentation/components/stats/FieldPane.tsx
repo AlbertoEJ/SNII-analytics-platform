@@ -39,14 +39,14 @@ export function FieldPane({ total, areaRows, institutions, locale, strings }: Pr
   return (
     <div id="field" className="space-y-6">
       <section className="space-y-2">
-        <h3 className="text-sm font-semibold">{strings.areaTitle}</h3>
+        <h3 className="text-base font-semibold">{strings.areaTitle}</h3>
         <IntensityBarList rows={areaRanking} total={total} mode="intensity" palette="area" locale={locale} />
       </section>
 
       <DisciplineTreemap rows={areaRows} title={strings.treemapTitle} subtitle={strings.treemapSubtitle} />
 
       <section className="space-y-2">
-        <h3 className="text-sm font-semibold">{strings.institutionTitle}</h3>
+        <h3 className="text-base font-semibold">{strings.institutionTitle}</h3>
         <ConcentrationLine text={strings.institutionConcentration} />
         <IntensityBarList rows={institutionRanking} total={total} mode="intensity" palette="institution" locale={locale} />
       </section>

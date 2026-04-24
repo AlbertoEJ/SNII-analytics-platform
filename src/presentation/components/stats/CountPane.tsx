@@ -53,8 +53,8 @@ export function CountPane({ total, levels, locale, strings }: Props) {
         </Card>
         <Card className="py-0">
           <CardContent className="p-4 space-y-2">
-            <h3 className="text-sm font-semibold">{strings.summaryTitle}</h3>
-            <ul className="text-sm text-muted-foreground space-y-1 list-disc pl-5">
+            <h3 className="text-base font-semibold">{strings.summaryTitle}</h3>
+            <ul className="text-sm text-muted-foreground space-y-1.5 list-disc pl-5">
               {strings.summaryBullets.map((b, i) => <li key={i}>{b}</li>)}
             </ul>
           </CardContent>
@@ -62,7 +62,7 @@ export function CountPane({ total, levels, locale, strings }: Props) {
       </div>
 
       <section className="space-y-2">
-        <h3 className="text-sm font-semibold">{strings.rankingTitle}</h3>
+        <h3 className="text-base font-semibold">{strings.rankingTitle}</h3>
         <IntensityBarList rows={rows} total={total} mode="categorical" locale={locale} />
       </section>
     </div>

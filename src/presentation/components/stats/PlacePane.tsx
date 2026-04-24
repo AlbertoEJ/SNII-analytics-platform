@@ -32,7 +32,7 @@ export function PlacePane({ total, stateRows, dbToDisplay, locale, strings }: Pr
       <ConcentrationLine text={strings.concentrationLine} />
 
       <section className="space-y-2">
-        <h3 className="text-sm font-semibold">{strings.rankingTitle}</h3>
+        <h3 className="text-base font-semibold">{strings.rankingTitle}</h3>
         <IntensityBarList rows={ranking} total={total} mode="intensity" palette="state" locale={locale} />
       </section>
 

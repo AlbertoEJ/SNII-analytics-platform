@@ -46,25 +46,25 @@ export function IntensityBarList(props: Props) {
                   id={row.id}
                   className="px-4 py-3 border-b last:border-b-0"
                 >
-                  <div className="flex items-center justify-between gap-3 mb-1.5">
+                  <div className="flex items-center justify-between gap-3 mb-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       {showIndex && (
-                        <span className="text-[10px] tabular-nums text-muted-foreground w-5 text-right shrink-0">
+                        <span className="text-xs tabular-nums text-muted-foreground w-5 text-right shrink-0">
                           {i + 1}
                         </span>
                       )}
                       <span className="text-sm truncate">{row.label}</span>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-3 shrink-0">
                       <span className="text-sm font-medium tabular-nums">
                         {row.count.toLocaleString(locale)}
                       </span>
-                      <span className="text-[10px] text-muted-foreground tabular-nums w-12 text-right">
+                      <span className="text-xs text-muted-foreground tabular-nums w-12 text-right">
                         {pct.toFixed(1)}%
                       </span>
                     </div>
                   </div>
-                  <div className={cn("h-1.5 rounded-full bg-muted overflow-hidden", showIndex && "ml-7")}>
+                  <div className={cn("h-2 rounded-full bg-muted overflow-hidden", showIndex && "ml-7")}>
                     <div
                       className="h-full"
                       style={{ width: `${barPct}%`, backgroundColor: barColor }}

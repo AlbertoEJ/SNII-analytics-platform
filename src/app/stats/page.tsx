@@ -111,11 +111,13 @@ export default async function StatsPage() {
     {
       label: t.stats.headline.total,
       value: fmtNum(total),
+      variant: "number",
       caption: t.stats.headline.totalCaption,
     },
     {
       label: t.stats.headline.topState,
       value: topState.label,
+      variant: "name",
       caption: topStatePct > 0
         ? t.stats.headline.topStateCaption(topState.label, oneInN(topStatePct))
         : t.stats.headline.totalCaption,
@@ -127,12 +129,14 @@ export default async function StatsPage() {
     {
       label: t.stats.headline.topInstitution,
       value: topInstitution.label,
+      variant: "name",
       caption: t.stats.headline.topInstitutionCaption(topInstitution.label, fmtPct(topInstitutionPct)),
       href: `#inst-${encodeURIComponent(topInstitution.label)}`,
     },
     {
       label: t.stats.headline.topArea,
       value: topArea.label,
+      variant: "name",
       caption: t.stats.headline.topAreaCaption(topArea.label, fmtPct(topAreaPct)),
       href: `#area-${encodeURIComponent(topArea.label)}`,
     },
@@ -141,7 +145,7 @@ export default async function StatsPage() {
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto">
       <header className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">{t.stats.title}</h1>
+        <h1 className="text-3xl font-semibold tracking-tight">{t.stats.title}</h1>
         <p className="text-sm text-muted-foreground">{t.stats.subtitle}</p>
       </header>
 
