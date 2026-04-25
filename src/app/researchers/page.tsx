@@ -60,7 +60,7 @@ export default async function ResearchersPage({
   const availableYears = await getAvailableYears.execute();
   const latest = availableYears.at(-1) ?? new Date().getFullYear();
   const yearRaw = typeof sp.year === "string" ? Number.parseInt(sp.year, 10) : Number.NaN;
-  const year = availableYears.includes(yearRaw) ? yearRaw : latest;
+  const year = Number.isFinite(yearRaw) && availableYears.includes(yearRaw) ? yearRaw : latest;
   const [areas, entidades] = await Promise.all([
     repo.distinctValues("area_conocimiento", year),
     repo.distinctValues("entidad_final", year),

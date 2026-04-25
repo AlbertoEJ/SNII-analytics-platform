@@ -32,7 +32,7 @@ export default async function Home({
 
   // Resolve year.
   const yearRaw = typeof sp.year === "string" ? Number.parseInt(sp.year, 10) : Number.NaN;
-  const year = availableYears.includes(yearRaw) ? yearRaw : latest;
+  const year = Number.isFinite(yearRaw) && availableYears.includes(yearRaw) ? yearRaw : latest;
 
   const rawArea = typeof sp.area === "string" && sp.area.trim() ? sp.area : undefined;
 

@@ -25,7 +25,7 @@ export default async function StatsPage({
   const availableYears = await getAvailableYears.execute();
   const latest = availableYears.at(-1) ?? new Date().getFullYear();
   const yearRaw = typeof sp.year === "string" ? Number.parseInt(sp.year, 10) : Number.NaN;
-  const year = availableYears.includes(yearRaw) ? yearRaw : latest;
+  const year = Number.isFinite(yearRaw) && availableYears.includes(yearRaw) ? yearRaw : latest;
 
   const [stats, stateLevel, areaBreakdown, institutions] = await Promise.all([
     getStats.execute({ year }),

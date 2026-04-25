@@ -14,7 +14,7 @@ export class SupabaseSnapshotRepository implements SnapshotRepository {
 
   async availableYears(): Promise<number[]> {
     const all = await this.fetchAllRpcRows<{ year: number }>("snapshots_available_years");
-    return all.map((r) => toNum(r.year));
+    return all.map((r) => toNum(r.year)).filter((y) => Number.isFinite(y));
   }
 
   async countsByState(year: number, filters?: { area?: string }): Promise<YearStateCountFiltered[]> {
