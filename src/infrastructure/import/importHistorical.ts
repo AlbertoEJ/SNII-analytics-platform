@@ -10,6 +10,7 @@ import { detectEra, type Era } from "./eraDetection";
 import { HEADER_MAPS, pickField } from "./headerMaps";
 import { resolveIdentities, type RawTuple } from "./identityResolution";
 import { normalizeName } from "./normalizeName";
+import { normalizeSnapshot, slugDedupInstituciones } from "./normalize";
 
 const HISTORIC_DIR_DEFAULT = "C:/Users/alber/Documents/Historico SNII";
 const PADRON_2026_DEFAULT = "C:/Users/alber/Documents/Padron_enero_2026.xlsx";
@@ -114,7 +115,7 @@ async function main() {
       if (!cvu && !expediente) continue;
       const name = clean(pickField(r, m.nombre)) ?? "";
       tuples.push({ year: f.year, name, cvu: cvu ?? undefined, expediente: expediente ?? undefined });
-      mapped.push({
+      mapped.push(normalizeSnapshot({
         year: f.year,
         sourceFile: basename(f.path),
         nivel: clean(pickField(r, m.nivel)),
@@ -129,7 +130,7 @@ async function main() {
         pais: clean(pickField(r, m.pais)),
         fecha_inicio_vigencia: toDate(pickField(r, m.fecha_inicio_vigencia)),
         fecha_fin_vigencia: toDate(pickField(r, m.fecha_fin_vigencia)),
-      });
+      }));
       kept++;
     }
     console.log(`  ${f.year} (${f.era}): ${kept} rows`);
@@ -154,6 +155,20 @@ async function main() {
   });
   const snapshots = Array.from(snapByKey.values());
   console.log(`Final snapshots: ${snapshots.length}`);
+
+  // Slug-based institucion dedup (port of migration 0016). Done across the
+  // full corpus after per-row normalization so we have the global frequency
+  // signal needed to pick canonical names.
+  const instMap = slugDedupInstituciones(snapshots.map((s) => s.institucion));
+  if (instMap.size > 0) {
+    let rewritten = 0;
+    for (const s of snapshots) {
+      if (s.institucion == null) continue;
+      const canon = instMap.get(s.institucion);
+      if (canon !== undefined) { s.institucion = canon; rewritten++; }
+    }
+    console.log(`Institucion slug-dedup: rewrote ${rewritten} rows across ${instMap.size} variants`);
+  }
 
   // Connect to Supabase.
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL!;
