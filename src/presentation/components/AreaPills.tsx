@@ -6,6 +6,8 @@ interface Props {
   areas: string[];
   active?: string;
   allLabel: string;
+  /** Optional: preserve the year param when switching areas. */
+  year?: number;
 }
 
 const SHORT_NAMES: Record<string, string> = {
@@ -20,17 +22,25 @@ const SHORT_NAMES: Record<string, string> = {
   IX: "Interdisciplinaria",
 };
 
-export function AreaPills({ areas, active, allLabel }: Props) {
+export function AreaPills({ areas, active, allLabel, year }: Props) {
   const sorted = [...areas].sort((a, b) => romanValue(a) - romanValue(b));
   const items = [{ value: "", label: allLabel, short: allLabel }].concat(
     sorted.map((a) => ({ value: a, label: a, short: shortLabel(a) })),
   );
 
+  const buildHref = (areaValue: string) => {
+    const params = new URLSearchParams();
+    if (areaValue) params.set("area", areaValue);
+    if (year != null) params.set("year", String(year));
+    const qs = params.toString();
+    return qs ? `/?${qs}` : "/";
+  };
+
   return (
     <div className="flex flex-wrap gap-1.5" role="group" aria-label="Area filter">
       {items.map((it) => {
         const isActive = it.value ? active === it.value : !active;
-        const href = it.value ? `/?area=${encodeURIComponent(it.value)}` : "/";
+        const href = buildHref(it.value);
         return (
           <Link
             key={it.value || "_all"}

@@ -89,7 +89,7 @@ export default async function Home({
                       render={<Link href={`/?year=${year}`}>{t.map.reset}</Link>} />
             )}
           </div>
-          <AreaPills areas={areasThisYear} active={area} allLabel={t.map.allAreas} />
+          <AreaPills areas={areasThisYear} active={area} allLabel={t.map.allAreas} year={year} />
           {area && <Badge variant="secondary" className="self-start">{t.map.showingArea(area)}</Badge>}
         </CardContent>
       </Card>
