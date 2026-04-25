@@ -21,7 +21,7 @@ import type { Locale } from "@/presentation/i18n/messages";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { CommandPalette } from "./CommandPalette";
 import { ThemeToggle } from "./ThemeToggle";
-import { MapIcon, UsersIcon, ChartIcon, SearchIcon } from "./icons";
+import { MapIcon, UsersIcon, ChartIcon, SearchIcon, HistoricIcon } from "./icons";
 
 interface Strings {
   appName: string;
@@ -30,6 +30,7 @@ interface Strings {
     map: string;
     researchers: string;
     stats: string;
+    historic: string;
     searchPlaceholder: string;
     search: string;
     commandPlaceholder: string;
@@ -64,6 +65,12 @@ export function AppShell({
       label: strings.nav.researchers,
       icon: UsersIcon,
       match: (p: string) => p.startsWith("/researchers"),
+    },
+    {
+      href: "/historic",
+      label: strings.nav.historic,
+      icon: HistoricIcon,
+      match: (p: string) => p.startsWith("/historic"),
     },
     {
       href: "/stats",
