@@ -1,22 +1,9 @@
-import type {
-  AreaDisciplineRow,
-  InstitutionCount,
-  ResearcherRepository,
-  StateLevelRow,
-} from "@/domain/repositories/ResearcherRepository";
+import type { AreaDisciplineRow, InstitutionCount, ResearcherRepository, StateLevelRow } from "@/domain/repositories/ResearcherRepository";
 
 export class GetAnalysis {
   constructor(private readonly repo: ResearcherRepository) {}
 
-  crossStateLevel(): Promise<StateLevelRow[]> {
-    return this.repo.crossStateLevel();
-  }
-
-  areaDisciplineBreakdown(): Promise<AreaDisciplineRow[]> {
-    return this.repo.areaDisciplineBreakdown();
-  }
-
-  countsByInstitution(): Promise<InstitutionCount[]> {
-    return this.repo.countsByInstitution();
-  }
+  crossStateLevel(year?: number): Promise<StateLevelRow[]> { return this.repo.crossStateLevel(year); }
+  areaDisciplineBreakdown(year?: number): Promise<AreaDisciplineRow[]> { return this.repo.areaDisciplineBreakdown(year); }
+  countsByInstitution(year?: number): Promise<InstitutionCount[]> { return this.repo.countsByInstitution(year); }
 }

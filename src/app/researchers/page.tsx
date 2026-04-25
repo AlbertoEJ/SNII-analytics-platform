@@ -56,15 +56,19 @@ export default async function ResearchersPage({
   const rawEntidad = typeof sp.entidad === "string" ? sp.entidad : undefined;
   const page = Math.max(1, parseInt((typeof sp.page === "string" ? sp.page : "1"), 10) || 1);
 
-  const { searchResearchers, repo } = container();
+  const { searchResearchers, repo, getAvailableYears } = container();
+  const availableYears = await getAvailableYears.execute();
+  const latest = availableYears.at(-1) ?? new Date().getFullYear();
+  const yearRaw = typeof sp.year === "string" ? Number.parseInt(sp.year, 10) : Number.NaN;
+  const year = availableYears.includes(yearRaw) ? yearRaw : latest;
   const [areas, entidades] = await Promise.all([
-    repo.distinctValues("area_conocimiento"),
-    repo.distinctValues("entidad_final"),
+    repo.distinctValues("area_conocimiento", year),
+    repo.distinctValues("entidad_final", year),
   ]);
   const area = rawArea && areas.includes(rawArea) ? rawArea : undefined;
   const entidad = rawEntidad && entidades.includes(rawEntidad) ? rawEntidad : undefined;
   const result = await searchResearchers.execute({
-    query, nivel, area, entidad,
+    query, nivel, area, entidad, year,
     limit: PAGE_SIZE,
     offset: (page - 1) * PAGE_SIZE,
   });

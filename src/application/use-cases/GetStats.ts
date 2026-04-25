@@ -3,7 +3,5 @@ import type { FacetCounts, ResearcherRepository } from "@/domain/repositories/Re
 export class GetStats {
   constructor(private readonly repo: ResearcherRepository) {}
 
-  execute(): Promise<FacetCounts> {
-    return this.repo.facets();
-  }
+  execute(opts?: { year?: number }): Promise<FacetCounts> { return this.repo.facets(opts?.year); }
 }

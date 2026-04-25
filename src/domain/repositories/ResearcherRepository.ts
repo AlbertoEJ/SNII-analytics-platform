@@ -10,6 +10,7 @@ export interface SearchFilters {
 }
 
 export interface SearchOptions extends SearchFilters {
+  year?: number;
   limit: number;
   offset: number;
 }
@@ -56,10 +57,10 @@ export interface InstitutionCount {
 export interface ResearcherRepository {
   search(opts: SearchOptions): Promise<SearchResult>;
   findByCvu(cvu: number): Promise<Researcher | null>;
-  facets(): Promise<FacetCounts>;
-  distinctValues(column: "area_conocimiento" | "entidad_final"): Promise<string[]>;
-  countsByState(filters?: { area?: string }): Promise<StateCount[]>;
-  crossStateLevel(): Promise<StateLevelRow[]>;
-  areaDisciplineBreakdown(): Promise<AreaDisciplineRow[]>;
-  countsByInstitution(): Promise<InstitutionCount[]>;
+  facets(year?: number): Promise<FacetCounts>;
+  distinctValues(column: "area_conocimiento" | "entidad_final", year?: number): Promise<string[]>;
+  countsByState(filters?: { area?: string; year?: number }): Promise<StateCount[]>;
+  crossStateLevel(year?: number): Promise<StateLevelRow[]>;
+  areaDisciplineBreakdown(year?: number): Promise<AreaDisciplineRow[]>;
+  countsByInstitution(year?: number): Promise<InstitutionCount[]>;
 }

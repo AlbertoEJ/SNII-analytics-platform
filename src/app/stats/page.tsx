@@ -12,16 +12,26 @@ import { FieldPane } from "@/presentation/components/stats/FieldPane";
 
 export const revalidate = 3600;
 
-export default async function StatsPage() {
+export default async function StatsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [k: string]: string | string[] | undefined }>;
+}) {
   const locale = await getLocale();
   const t = getMessages(locale);
-  const { getStats, getAnalysis } = container();
+  const sp = await searchParams;
+  const { getStats, getAnalysis, getAvailableYears } = container();
+
+  const availableYears = await getAvailableYears.execute();
+  const latest = availableYears.at(-1) ?? new Date().getFullYear();
+  const yearRaw = typeof sp.year === "string" ? Number.parseInt(sp.year, 10) : Number.NaN;
+  const year = availableYears.includes(yearRaw) ? yearRaw : latest;
 
   const [stats, stateLevel, areaBreakdown, institutions] = await Promise.all([
-    getStats.execute(),
-    getAnalysis.crossStateLevel(),
-    getAnalysis.areaDisciplineBreakdown(),
-    getAnalysis.countsByInstitution(),
+    getStats.execute({ year }),
+    getAnalysis.crossStateLevel(year),
+    getAnalysis.areaDisciplineBreakdown(year),
+    getAnalysis.countsByInstitution(year),
   ]);
 
   // DB-name → display-name map for states.
