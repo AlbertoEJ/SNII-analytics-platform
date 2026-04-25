@@ -31,6 +31,7 @@ export function YearSlider({ availableYears, value, labels }: Props) {
 
   // Push URL update, debounced.
   function pushYear(y: number) {
+    if (!Number.isFinite(y)) return;
     if (pushTimer.current) clearTimeout(pushTimer.current);
     pushTimer.current = setTimeout(() => {
       const next = new URLSearchParams(sp.toString());
@@ -40,6 +41,7 @@ export function YearSlider({ availableYears, value, labels }: Props) {
   }
 
   function commit(y: number) {
+    if (!Number.isFinite(y)) return;
     setYear(y);
     pushYear(y);
   }
@@ -92,14 +94,21 @@ export function YearSlider({ availableYears, value, labels }: Props) {
           value={[year]}
           min={min} max={max} step={1}
           onValueChange={(v) => {
-            const y = (v as number[])[0];
+            const arr = v as number[];
+            const y = arr[0];
+            if (!Number.isFinite(y)) return;
             // snap to nearest present year if user lands on a missing one.
             let snap = y;
             if (!present.has(y)) {
               let down = y, up = y;
               while (down >= min && !present.has(down)) down--;
               while (up <= max && !present.has(up)) up++;
-              snap = (y - down <= up - y) ? down : up;
+              const downValid = present.has(down);
+              const upValid = present.has(up);
+              if (downValid && upValid) snap = (y - down <= up - y) ? down : up;
+              else if (downValid) snap = down;
+              else if (upValid) snap = up;
+              else return; // nothing in range — ignore the change
             }
             commit(snap);
           }}
