@@ -16,7 +16,12 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: "Histórico SNII · 1984–2026" };
 }
 
-const TOP_N = 10;
+// Number of institutions shown in the bump chart legend.
+const LEGEND_TOP_N = 10;
+// Per-year cutoff used to fetch the raw RPC rows. Wider than LEGEND_TOP_N so
+// the "10 most consistent across history" filter has enough material to pick
+// from — an institution always at rank ~12 globally still gets considered.
+const FETCH_TOP_N = 30;
 
 export default async function HistoricPage() {
   const locale = await getLocale();
@@ -29,8 +34,32 @@ export default async function HistoricPage() {
     c.getNetFlowsByYear.execute(),
     c.getStatesByYear.execute(),
     c.getAreasByYear.execute(),
-    c.getInstitutionsByYear.execute({ topN: TOP_N }),
+    c.getInstitutionsByYear.execute({ topN: FETCH_TOP_N }),
   ]);
+
+  // Reduce the raw per-year top-N rows to a single legend of the LEGEND_TOP_N
+  // institutions with the highest cumulative count across all years, then
+  // re-rank within each year over only those institutions.
+  const totalsByInst = new Map<string, number>();
+  for (const r of institutions) {
+    totalsByInst.set(r.institucion, (totalsByInst.get(r.institucion) ?? 0) + r.count);
+  }
+  const keepInst = new Set(
+    Array.from(totalsByInst.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, LEGEND_TOP_N)
+      .map(([name]) => name),
+  );
+  const filtered = institutions.filter((r) => keepInst.has(r.institucion));
+  const byYear = new Map<number, typeof filtered>();
+  for (const r of filtered) {
+    if (!byYear.has(r.year)) byYear.set(r.year, []);
+    byYear.get(r.year)!.push(r);
+  }
+  const reranked = Array.from(byYear.values()).flatMap((group) => {
+    const sorted = [...group].sort((a, b) => b.count - a.count);
+    return sorted.map((r, i) => ({ ...r, rank: i + 1 }));
+  });
 
   const latestYear = years.at(-1) ?? 2026;
   const minYear = years[0] ?? 1984;
@@ -67,7 +96,7 @@ export default async function HistoricPage() {
       </ChartCard>
 
       <ChartCard title={t.historic.institutions.title} subtitle={t.historic.institutions.subtitle}>
-        <InstitutionBumpChart rows={institutions} topN={TOP_N} />
+        <InstitutionBumpChart rows={reranked} topN={LEGEND_TOP_N} />
       </ChartCard>
     </div>
   );
