@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
 import { getLocale } from "@/presentation/i18n/getLocale";
 import { getMessages } from "@/presentation/i18n/messages";
 import { container } from "@/lib/container";
@@ -11,54 +12,65 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { LevelBadge } from "@/presentation/components/LevelBadge";
+import { CareerTimeline } from "@/presentation/components/researcher/CareerTimeline";
 import { formatName, nameInitials } from "@/lib/formatName";
 
 export const revalidate = 3600;
 
+const GLOBALLY_MISSING_YEARS = [2021];
+
+async function resolveIdentity(c: ReturnType<typeof container>, id: string) {
+  if (/^\d+$/.test(id)) return c.identityRepo.findByCvu(Number.parseInt(id, 10));
+  const m = id.match(/^c-(\d+)$/);
+  if (m) return c.identityRepo.findByCanonicalId(Number.parseInt(m[1], 10));
+  return null;
+}
+
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ cvu: string }>;
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
-  const { cvu: cvuStr } = await params;
-  if (!/^\d+$/.test(cvuStr)) return { title: "Investigador" };
-  const r = await container().getResearcherByCvu.execute(Number.parseInt(cvuStr, 10));
-  if (!r) return { title: "Investigador no encontrado" };
-
-  const levelLabel = r.nivel ? SNII_LEVEL_LABELS[r.nivel].es : null;
-  const description = [r.areaConocimiento, r.institucionFinal, r.entidadFinal]
+  const { id } = await params;
+  const c = container();
+  const identity = await resolveIdentity(c, id);
+  if (!identity) return { title: "Investigador no encontrado" };
+  const timeline = await c.getResearcherTimeline.execute(identity.canonicalId);
+  const latest = timeline.at(-1);
+  const levelLabel = latest?.nivel ? SNII_LEVEL_LABELS[latest.nivel].es : null;
+  const description = [latest?.areaConocimiento, latest?.institucion, latest?.entidad]
     .filter(Boolean)
     .join(" · ");
-
   return {
-    title: `${formatName(r.nombre)}${levelLabel ? ` · ${levelLabel}` : ""} · SNII`,
-    description: description || `Investigador SNII (CVU ${r.cvu})`,
+    title: `${formatName(identity.canonicalName)}${levelLabel ? ` · ${levelLabel}` : ""} · SNII`,
+    description: description || `Investigador SNII (CVU ${identity.cvu ?? "—"})`,
   };
 }
 
 export default async function ResearcherDetailPage({
   params,
 }: {
-  params: Promise<{ cvu: string }>;
+  params: Promise<{ id: string }>;
 }) {
-  const { cvu: cvuStr } = await params;
-  if (!/^\d+$/.test(cvuStr)) notFound();
-  const cvu = Number.parseInt(cvuStr, 10);
-
+  const { id } = await params;
   const locale = await getLocale();
   const t = getMessages(locale);
-  const r = await container().getResearcherByCvu.execute(cvu);
-  if (!r) notFound();
+  const c = container();
+  const identity = await resolveIdentity(c, id);
+  if (!identity) notFound();
 
-  const dateFmt = (d: string | null) =>
+  const timeline = await c.getResearcherTimeline.execute(identity.canonicalId);
+  const latest = timeline.at(-1);
+
+  const dateFmt = (d: string | null | undefined) =>
     d ? new Date(d).toLocaleDateString(locale === "es" ? "es-MX" : "en-US") : null;
 
-  const inicio = dateFmt(r.fechaInicioVigencia);
-  const fin = dateFmt(r.fechaFinVigencia);
-  const isActive = r.fechaFinVigencia ? new Date(r.fechaFinVigencia) >= new Date() : true;
+  const inicio = dateFmt(latest?.fechaInicioVigencia);
+  const fin = dateFmt(latest?.fechaFinVigencia);
+  const isActive = latest?.fechaFinVigencia ? new Date(latest.fechaFinVigencia) >= new Date() : true;
 
-  const institucion = r.institucionFinal ?? r.institucionAcreditacion;
-  const entidad = r.entidadFinal ?? r.entidadAcreditacion;
+  const institucion = latest?.institucion ?? null;
+  const entidad = latest?.entidad ?? null;
   const entidadDisplay = entidad
     ? Object.entries(STATE_CODE_TO_DB_NAME).find(([, v]) => v === entidad)?.[0]
     : undefined;
@@ -66,8 +78,8 @@ export default async function ResearcherDetailPage({
     ? STATE_DISPLAY_NAME[Number(entidadDisplay)]
     : entidad ?? "—";
 
-  const initials = nameInitials(r.nombre);
-  const displayName = formatName(r.nombre);
+  const initials = nameInitials(identity.canonicalName);
+  const displayName = formatName(identity.canonicalName);
 
   return (
     <article className="space-y-5 max-w-5xl mx-auto">
@@ -103,20 +115,20 @@ export default async function ResearcherDetailPage({
                   {displayName}
                 </h1>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                  <span className="tabular-nums">CVU {r.cvu}</span>
-                  {r.categoria && (
+                  <span className="tabular-nums">CVU {identity.cvu ?? "—"}</span>
+                  {latest?.categoria && (
                     <>
                       <Separator orientation="vertical" className="!h-3" />
-                      <span>{r.categoria}</span>
+                      <span>{latest.categoria}</span>
                     </>
                   )}
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                {r.nivel && <LevelBadge level={r.nivel} locale={locale} />}
-                {r.areaConocimiento && (
+                {latest?.nivel && <LevelBadge level={latest.nivel} locale={locale} />}
+                {latest?.areaConocimiento && (
                   <Badge variant="secondary" className="font-normal">
-                    {r.areaConocimiento}
+                    {latest.areaConocimiento}
                   </Badge>
                 )}
                 {entidad && (
@@ -127,6 +139,34 @@ export default async function ResearcherDetailPage({
               </div>
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Ambiguity banner */}
+      {identity.ambiguous && (
+        <Card className="border-amber-500/40 bg-amber-50 dark:bg-amber-950/30">
+          <CardContent className="flex items-start gap-3 p-4 text-sm">
+            <AlertTriangle className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+            <p className="text-amber-900 dark:text-amber-100">{t.researcher.ambiguous}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Career timeline */}
+      <Card className="py-0">
+        <CardContent className="p-4">
+          <CareerTimeline
+            snapshots={timeline.map((s) => ({ year: s.year, nivel: s.nivel }))}
+            globallyMissingYears={GLOBALLY_MISSING_YEARS}
+            locale={locale}
+            strings={{
+              title: t.researcher.timeline.title,
+              activeRange: t.researcher.timeline.active,
+              legend: t.researcher.timeline.legend,
+              unknownLevel: t.researcher.timeline.unknownLevel,
+              yearGap: t.researcher.timeline.yearGap,
+            }}
+          />
         </CardContent>
       </Card>
 
@@ -160,19 +200,16 @@ export default async function ResearcherDetailPage({
       {/* Two-column info */}
       <div className="grid gap-4 lg:grid-cols-2">
         <InfoCard title={t.researcher.academic}>
-          <Row label={t.researcher.area} value={r.areaConocimiento} />
-          <Row label={t.researcher.discipline} value={r.disciplina} />
-          <Row label={t.researcher.subdiscipline} value={r.subdisciplina} />
-          <Row label={t.researcher.specialty} value={r.especialidad} />
+          <Row label={t.researcher.area} value={latest?.areaConocimiento ?? null} />
+          <Row label={t.researcher.discipline} value={latest?.disciplina ?? null} />
+          <Row label={t.researcher.subdiscipline} value={latest?.subdisciplina ?? null} />
+          <Row label={t.researcher.specialty} value={latest?.especialidad ?? null} />
         </InfoCard>
 
         <InfoCard title={t.researcher.affiliation}>
           <Row label={t.researcher.institution} value={institucion} />
-          <Row label={t.researcher.department} value={r.dependenciaAcreditacion} />
-          <Row label={t.researcher.subDepartment} value={r.subdependenciaAcreditacion} />
-          <Row label={t.researcher.departmentSection} value={r.departamentoAcreditacion} />
+          <Row label={t.researcher.department} value={latest?.dependencia ?? null} />
           <Row label={t.researcher.state} value={entidadLabel === "—" ? null : entidadLabel} />
-          <Row label={t.researcher.cpis} value={r.cpiS ? t.researcher.isCpis : null} />
         </InfoCard>
       </div>
 
@@ -208,13 +245,13 @@ export default async function ResearcherDetailPage({
               }
             />
           )}
-          {r.areaConocimiento && (
+          {latest?.areaConocimiento && (
             <Button
               variant="outline"
               size="sm"
               nativeButton={false}
               render={
-                <Link href={`/researchers?area=${encodeURIComponent(r.areaConocimiento)}`}>
+                <Link href={`/researchers?area=${encodeURIComponent(latest.areaConocimiento)}`}>
                   {t.researcher.othersFromArea}
                 </Link>
               }
@@ -222,20 +259,6 @@ export default async function ResearcherDetailPage({
           )}
         </CardContent>
       </Card>
-
-      {/* Notes (often present in the padron) */}
-      {r.notas && r.notas.trim() && (
-        <Card className="py-0">
-          <CardHeader className="py-3 border-b">
-            <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
-              {t.researcher.notes}
-            </span>
-          </CardHeader>
-          <CardContent className="p-4 text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed max-h-72 overflow-auto">
-            {r.notas}
-          </CardContent>
-        </Card>
-      )}
     </article>
   );
 }
