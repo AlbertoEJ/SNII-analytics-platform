@@ -51,6 +51,12 @@ export function YearSlider({ availableYears, value, labels }: Props) {
     pushYearDebounced(y);
   }
 
+  // Track the current year in a ref so the play loop can read it without
+  // calling setYear with an updater (which would run pushYearNow during
+  // React's render phase and trigger "setState while rendering" errors).
+  const yearRef = useRef(year);
+  useEffect(() => { yearRef.current = year; }, [year]);
+
   // Play loop.
   useEffect(() => {
     if (!playing) {
@@ -60,16 +66,15 @@ export function YearSlider({ availableYears, value, labels }: Props) {
     }
     const period = 1500 / speed;
     intervalRef.current = setInterval(() => {
-      setYear((cur) => {
-        let next = cur + 1;
-        while (next <= max && !present.has(next)) next++;
-        if (next > max) {
-          setPlaying(false);
-          return cur;
-        }
-        pushYearNow(next);
-        return next;
-      });
+      const cur = yearRef.current;
+      let next = cur + 1;
+      while (next <= max && !present.has(next)) next++;
+      if (next > max) {
+        setPlaying(false);
+        return;
+      }
+      setYear(next);
+      pushYearNow(next);
     }, period);
     return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
   }, [playing, speed, max]); // eslint-disable-line react-hooks/exhaustive-deps
