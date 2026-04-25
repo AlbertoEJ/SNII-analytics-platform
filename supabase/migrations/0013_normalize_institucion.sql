@@ -1,3 +1,6 @@
+-- HISTORICAL — NO LONGER PART OF THE IMPORT PATH.
+-- Logic now lives in src/infrastructure/import/normalize/institucion.ts.
+
 -- Reduce institucion noise without trying to fully canonicalize 3,641
 -- distinct strings:
 --   1. unaccent + uppercase

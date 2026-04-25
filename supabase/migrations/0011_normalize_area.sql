@@ -1,3 +1,6 @@
+-- HISTORICAL — NO LONGER PART OF THE IMPORT PATH.
+-- Logic now lives in src/infrastructure/import/normalize/area.ts.
+
 -- Normalize snii.researcher_snapshots.area_conocimiento to one canonical
 -- form per (roman-numeral) area. Five separate concerns:
 --   1. Diacritics + casing vary (FÍSICO-MATEMÁTICAS vs FISICO-MATEMATICAS).

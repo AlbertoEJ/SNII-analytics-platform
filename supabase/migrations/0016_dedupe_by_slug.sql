@@ -1,3 +1,7 @@
+-- HISTORICAL — NO LONGER PART OF THE IMPORT PATH.
+-- Logic now lives in src/infrastructure/import/normalize/institucion.ts
+-- as `slugDedupInstituciones()`.
+
 -- Final pass: canonicalize remaining institucion clusters by slug.
 -- For each cluster of variants whose slug (alphanumeric-only, lowercase)
 -- is identical, pick the most-common form and rewrite all variants to it.

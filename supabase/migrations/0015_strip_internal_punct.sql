@@ -1,3 +1,6 @@
+-- HISTORICAL — NO LONGER PART OF THE IMPORT PATH.
+-- Logic now lives in src/infrastructure/import/normalize/institucion.ts.
+
 -- Catches the remaining ~15 institucion duplicate clusters that survived
 -- 0013 + 0014:
 --   - "CENTRO ... A.C" vs "CENTRO ... AC"     (~5 clusters)

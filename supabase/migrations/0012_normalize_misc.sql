@@ -1,3 +1,7 @@
+-- HISTORICAL — NO LONGER PART OF THE IMPORT PATH.
+-- Logic now lives in src/infrastructure/import/normalize/{nivel,categoria,
+-- pais,dependencia,institucion}.ts.
+
 -- Normalize the rest of the easily-fixable string columns.
 --   1. nivel: collapse long-form ("Investigador(a) Nacional Nivel I") and
 --      "Emérito" to the canonical single-character codes. Without this,

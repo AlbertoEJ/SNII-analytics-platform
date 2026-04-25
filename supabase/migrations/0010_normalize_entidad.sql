@@ -1,3 +1,10 @@
+-- HISTORICAL — NO LONGER PART OF THE IMPORT PATH.
+-- The same logic now runs in TypeScript inside the importer:
+--   src/infrastructure/import/normalize/entidad.ts
+-- Kept in this file for the historical record and so any pre-existing DB
+-- can still apply it. New deployments don't need it; the importer writes
+-- already-clean values.
+
 -- Normalize snii.researcher_snapshots.entidad to the same canonical form used
 -- by STATE_CODE_TO_DB_NAME (uppercase, no diacritics). Without this, the
 -- home-page map's choropleth can't look up rows by name, and entidad-based
