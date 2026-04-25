@@ -11,9 +11,9 @@ interface Props {
   height?: number;
 }
 
-const M = { top: 16, right: 280, bottom: 28, left: 32 };
+const M = { top: 16, right: 440, bottom: 28, left: 32 };
 
-export function InstitutionBumpChart({ rows, topN, width = 1000, height = 420 }: Props) {
+export function InstitutionBumpChart({ rows, topN, width = 1100, height = 420 }: Props) {
   const [hover, setHover] = useState<string | null>(null);
 
   const { byInst, years, names } = useMemo(() => {
@@ -48,7 +48,8 @@ export function InstitutionBumpChart({ rows, topN, width = 1000, height = 420 }:
            onMouseEnter={() => setHover(n)}>
           <rect width={10} height={10} fill={color(n)} opacity={hover && hover !== n ? 0.3 : 0.9} />
           <text x={14} y={9} fontSize={10} fill="currentColor" opacity={hover && hover !== n ? 0.4 : 1}>
-            {n.length > 36 ? n.slice(0, 36) + "…" : n}
+            {n}
+            <title>{n}</title>
           </text>
         </g>
       ))}
