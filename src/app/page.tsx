@@ -28,11 +28,14 @@ export default async function Home({
   const { snapshotRepo, getAvailableYears } = container();
 
   const availableYears = await getAvailableYears.execute();
-  const latest = availableYears.at(-1) ?? 2026;
+  // The home-page map needs entidad data, which only exists from 1990 onward.
+  // Earlier years still live in snapshots (used by /historic, /stats, /researchers).
+  const mapYears = availableYears.filter((y) => y >= 1990);
+  const latest = mapYears.at(-1) ?? 2026;
 
   // Resolve year.
   const yearRaw = typeof sp.year === "string" ? Number.parseInt(sp.year, 10) : Number.NaN;
-  const year = Number.isFinite(yearRaw) && availableYears.includes(yearRaw) ? yearRaw : latest;
+  const year = Number.isFinite(yearRaw) && mapYears.includes(yearRaw) ? yearRaw : latest;
 
   const rawArea = typeof sp.area === "string" && sp.area.trim() ? sp.area : undefined;
 
@@ -72,7 +75,7 @@ export default async function Home({
       </header>
 
       <YearSlider
-        availableYears={availableYears}
+        availableYears={mapYears}
         value={year}
         labels={{ label: t.slider.label, play: t.slider.play, pause: t.slider.pause, speedLabel: t.slider.speedLabel }}
       />

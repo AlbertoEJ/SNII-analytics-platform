@@ -94,7 +94,7 @@ export function YearSlider({ availableYears, value, labels }: Props) {
           value={[year]}
           min={min} max={max} step={1}
           onValueChange={(v) => {
-            const arr = v as number[];
+            const arr = (Array.isArray(v) ? v : [v]) as number[];
             const y = arr[0];
             if (!Number.isFinite(y)) return;
             // snap to nearest present year if user lands on a missing one.
