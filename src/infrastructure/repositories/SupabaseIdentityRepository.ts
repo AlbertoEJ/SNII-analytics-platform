@@ -33,14 +33,14 @@ export class SupabaseIdentityRepository implements IdentityRepository {
 
   async findByCanonicalId(id: number): Promise<ResearcherIdentity | null> {
     const { data, error } = await this.client
-      .from("researchers_v2").select("*").eq("canonical_id", id).maybeSingle();
+      .from("researchers").select("*").eq("canonical_id", id).maybeSingle();
     if (error) throw new Error(error.message);
     return data ? mapRow(data as Row) : null;
   }
 
   async findByCvu(cvu: number): Promise<ResearcherIdentity | null> {
     const { data, error } = await this.client
-      .from("researchers_v2").select("*").eq("cvu", cvu).maybeSingle();
+      .from("researchers").select("*").eq("cvu", cvu).maybeSingle();
     if (error) throw new Error(error.message);
     return data ? mapRow(data as Row) : null;
   }
@@ -49,7 +49,7 @@ export class SupabaseIdentityRepository implements IdentityRepository {
     query: string,
     opts: { year?: number; limit: number; offset: number },
   ): Promise<ResearcherIdentity[]> {
-    let q = this.client.from("researchers_v2").select("*")
+    let q = this.client.from("researchers").select("*")
       .order("canonical_name").range(opts.offset, opts.offset + opts.limit - 1);
     if (query.trim()) {
       const tokens = query.trim().normalize("NFD").replace(/\p{Diacritic}/gu, "")

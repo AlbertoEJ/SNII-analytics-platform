@@ -164,13 +164,13 @@ async function main() {
   });
 
   // TRUNCATE both tables (snapshots first because of FK).
-  console.log("Truncating researcher_snapshots and researchers_v2…");
+  console.log("Truncating researcher_snapshots and researchers…");
   {
     const { error } = await supa.rpc("truncate_v2_tables");
     if (error) {
       // Fallback: use raw delete if the RPC isn't defined.
       await supa.from("researcher_snapshots").delete().neq("year", -1);
-      await supa.from("researchers_v2").delete().neq("canonical_id", -1);
+      await supa.from("researchers").delete().neq("canonical_id", -1);
     }
   }
 
@@ -187,7 +187,7 @@ async function main() {
       first_year: id.firstYear,
       last_year: id.lastYear,
     }));
-    const { error } = await supa.from("researchers_v2").insert(batch);
+    const { error } = await supa.from("researchers").insert(batch);
     if (error) { console.error(error); process.exit(1); }
     if ((i + batch.length) % 5000 === 0 || i + batch.length === identities.length) {
       console.log(`  identities ${i + batch.length}/${identities.length}`);
