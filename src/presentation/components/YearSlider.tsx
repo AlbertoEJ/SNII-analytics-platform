@@ -29,21 +29,26 @@ export function YearSlider({ availableYears, value, labels }: Props) {
 
   useEffect(() => setYear(value), [value]);
 
-  // Push URL update, debounced.
-  function pushYear(y: number) {
+  function pushYearNow(y: number) {
     if (!Number.isFinite(y)) return;
     if (pushTimer.current) clearTimeout(pushTimer.current);
-    pushTimer.current = setTimeout(() => {
-      const next = new URLSearchParams(sp.toString());
-      next.set("year", String(y));
-      router.replace(`${path}?${next.toString()}`, { scroll: false });
-    }, 300);
+    pushTimer.current = null;
+    const next = new URLSearchParams(sp.toString());
+    next.set("year", String(y));
+    router.replace(`${path}?${next.toString()}`, { scroll: false });
+  }
+
+  // Debounced — used while the user is dragging.
+  function pushYearDebounced(y: number) {
+    if (!Number.isFinite(y)) return;
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+    pushTimer.current = setTimeout(() => pushYearNow(y), 300);
   }
 
   function commit(y: number) {
     if (!Number.isFinite(y)) return;
     setYear(y);
-    pushYear(y);
+    pushYearDebounced(y);
   }
 
   // Play loop.
@@ -62,7 +67,7 @@ export function YearSlider({ availableYears, value, labels }: Props) {
           setPlaying(false);
           return cur;
         }
-        pushYear(next);
+        pushYearNow(next);
         return next;
       });
     }, period);
