@@ -16,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return { title: "Histórico SNII · 1984–2026" };
 }
 
-const TOP_N = 15;
+const TOP_N = 10;
 
 export default async function HistoricPage() {
   const locale = await getLocale();

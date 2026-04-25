@@ -29,7 +29,17 @@ export function InstitutionBumpChart({ rows, topN, width = 1100, height = 420 }:
     }
     for (const list of byInst.values()) list.sort((a, b) => a.year - b.year);
     const years = Array.from(new Set(rows.map((r) => r.year))).sort((a, b) => a - b);
-    const names = Array.from(byInst.keys()).sort();
+    // Order legend by best-ever rank (lowest = top), tiebreak by years-in-top.
+    // Institutions with a stronger or longer presence appear first.
+    const names = Array.from(byInst.keys()).sort((a, b) => {
+      const la = byInst.get(a)!;
+      const lb = byInst.get(b)!;
+      const bestA = Math.min(...la.map((d) => d.rank));
+      const bestB = Math.min(...lb.map((d) => d.rank));
+      if (bestA !== bestB) return bestA - bestB;
+      if (la.length !== lb.length) return lb.length - la.length;
+      return a.localeCompare(b);
+    });
     return { byInst, years, names, countLookup };
   }, [rows]);
 
