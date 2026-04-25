@@ -1,5 +1,15 @@
 # SNII Analytics Platform
 
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Supabase](https://img.shields.io/badge/Supabase-3FCF8E?style=for-the-badge&logo=supabase&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
+![D3.js](https://img.shields.io/badge/D3.js-F9A03C?style=for-the-badge&logo=d3dotjs&logoColor=white)
+![Vitest](https://img.shields.io/badge/Vitest-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)
+
 An open browser for Mexico's **Sistema Nacional de Investigadoras e Investigadores (SNII)** roll — 1984 through 2026. Search any of ~72,000 researchers, follow their level/area/institution timelines, and explore aggregate trends across four decades.
 
 > Unofficial project. Built on publicly-available SECIHTI data; not affiliated with or endorsed by SECIHTI.
@@ -145,4 +155,5 @@ MIT — see [LICENSE](LICENSE).
 
 ## Acknowledgements
 
-Source data: [SECIHTI](https://secihti.mx/) — Sistema Nacional de Investigadoras e Investigadores. The padrón is published as open data; this project does not redistribute the raw files.
+- Source data: [SECIHTI](https://secihti.mx/) — Sistema Nacional de Investigadoras e Investigadores. The padrón is published as open data; this project does not redistribute the raw files.
+- Built with assistance from [Claude Code](https://claude.com/claude-code) — Anthropic's coding agent helped design the data model, build the historic import pipeline, and migrate the database from local to cloud Supabase.
