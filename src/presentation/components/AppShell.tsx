@@ -21,7 +21,10 @@ import type { Locale } from "@/presentation/i18n/messages";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { CommandPalette } from "./CommandPalette";
 import { ThemeToggle } from "./ThemeToggle";
-import { MapIcon, UsersIcon, ChartIcon, SearchIcon, HistoricIcon } from "./icons";
+import { MapIcon, UsersIcon, ChartIcon, SearchIcon, HistoricIcon, GitHubIcon } from "./icons";
+
+const REPO_URL = "https://github.com/AlbertoEJ/SNII-analytics-platform";
+const AUTHOR = "Alberto Espinosa";
 
 interface Strings {
   appName: string;
@@ -163,6 +166,34 @@ export function AppShell({
           </SidebarContent>
 
           <SidebarFooter className="gap-2 border-t border-sidebar-border">
+            {/* Credits — author + repo. Hidden when sidebar is collapsed to icons,
+                where the icon-only GitHub link below takes over. */}
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-2 py-1 rounded-md text-[11px] text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors group-data-[collapsible=icon]:hidden"
+              title={`${AUTHOR} · GitHub`}
+            >
+              <GitHubIcon className="w-3.5 h-3.5 shrink-0" />
+              <span className="flex flex-col leading-tight min-w-0">
+                <span className="truncate">{AUTHOR}</span>
+                <span className="text-[10px] text-muted-foreground/70 truncate">
+                  AlbertoEJ/SNII-analytics-platform
+                </span>
+              </span>
+            </a>
+            {/* Icon-only fallback when sidebar collapsed. */}
+            <a
+              href={REPO_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${AUTHOR} · GitHub`}
+              title={`${AUTHOR} · GitHub`}
+              className="hidden group-data-[collapsible=icon]:grid place-items-center w-8 h-8 mx-auto rounded-md text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/50 transition-colors"
+            >
+              <GitHubIcon className="w-4 h-4" />
+            </a>
             <div className="flex items-center justify-between gap-2 px-2 group-data-[collapsible=icon]:hidden">
               <span className="text-[10px] text-muted-foreground truncate flex-1">
                 {strings.footer}
