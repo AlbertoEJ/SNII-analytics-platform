@@ -29,7 +29,7 @@ export function IntensityBarList(props: Props) {
   const max = rows[0]?.count ?? 0;
 
   return (
-    <Card className="py-0 overflow-hidden">
+    <Card className="pt-0 pb-6 overflow-hidden">
       <CardContent className="p-0">
         <ScrollArea style={{ maxHeight }}>
           <ol>

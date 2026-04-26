@@ -117,42 +117,44 @@ export default async function StatsPage({
   const topInstitutionPct = total > 0 ? topInstitution.count / total : 0;
   const topAreaPct = total > 0 ? topArea.count / total : 0;
 
-  // "1 de cada N" uses a rounded reciprocal of the share.
-  const oneInN = (ratio: number) =>
-    ratio > 0 ? Math.max(2, Math.round(1 / ratio)).toLocaleString(locale === "es" ? "es-MX" : "en-US") : "—";
-
   const headlineCards: [HeadlineCard, HeadlineCard, HeadlineCard, HeadlineCard] = [
     {
       label: t.stats.headline.total,
       value: fmtNum(total),
-      variant: "number",
       caption: t.stats.headline.totalCaption,
+      href: "#count",
+      icon: "users",
+      accent: "text-sky-500",
     },
     {
       label: t.stats.headline.topState,
-      value: topState.label,
-      variant: "name",
-      caption: topStatePct > 0
-        ? t.stats.headline.topStateCaption(topState.label, oneInN(topStatePct))
-        : t.stats.headline.totalCaption,
-      href: `#state-${encodeURIComponent(
+      value: topStatePct > 0 ? fmtPct(topStatePct) : "—",
+      detail: topState.label,
+      caption: t.stats.headline.topStateCaption,
+      href: `#place/state-${encodeURIComponent(
         // Store the DB-name in the hash so the anchor matches the PlacePane row id.
         Object.entries(dbToDisplay).find(([, display]) => display === topState.label)?.[0] ?? topState.label,
       )}`,
+      icon: "mapPin",
+      accent: "text-rose-500",
     },
     {
       label: t.stats.headline.topInstitution,
-      value: topInstitution.label,
-      variant: "name",
-      caption: t.stats.headline.topInstitutionCaption(topInstitution.label, fmtPct(topInstitutionPct)),
-      href: `#inst-${encodeURIComponent(topInstitution.label)}`,
+      value: fmtPct(topInstitutionPct),
+      detail: topInstitution.label,
+      caption: t.stats.headline.topInstitutionCaption,
+      href: `#field/inst-${encodeURIComponent(topInstitution.label)}`,
+      icon: "building",
+      accent: "text-amber-500",
     },
     {
       label: t.stats.headline.topArea,
-      value: topArea.label,
-      variant: "name",
-      caption: t.stats.headline.topAreaCaption(topArea.label, fmtPct(topAreaPct)),
-      href: `#area-${encodeURIComponent(topArea.label)}`,
+      value: fmtPct(topAreaPct),
+      detail: topArea.label,
+      caption: t.stats.headline.topAreaCaption,
+      href: `#field/area-${encodeURIComponent(topArea.label)}`,
+      icon: "book",
+      accent: "text-emerald-500",
     },
   ];
 

@@ -107,16 +107,13 @@ export const messages = {
       subtitle: "Sistema Nacional de Investigadoras e Investigadores",
       headline: {
         total: "Total",
-        totalCaption: "Investigadoras e investigadores en el SNII.",
-        topState: "Entidad con más investigadores",
-        topStateCaption: (name: string, share: string) =>
-          `1 de cada ${share} investigadores está en ${name}.`,
-        topInstitution: "Institución con más investigadores",
-        topInstitutionCaption: (name: string, share: string) =>
-          `${name} concentra el ${share} del total.`,
+        totalCaption: "en el padrón SNII",
+        topState: "Entidad líder",
+        topStateCaption: "del total nacional",
+        topInstitution: "Institución líder",
+        topInstitutionCaption: "del padrón",
         topArea: "Área más numerosa",
-        topAreaCaption: (name: string, share: string) =>
-          `${name} agrupa al ${share} del padrón.`,
+        topAreaCaption: "del padrón",
       },
       tabs: {
         count: "¿Cuántos?",
@@ -282,16 +279,13 @@ export const messages = {
       subtitle: "National System of Researchers",
       headline: {
         total: "Total",
-        totalCaption: "Researchers in the SNII.",
-        topState: "Top state",
-        topStateCaption: (name: string, share: string) =>
-          `1 in ${share} researchers is in ${name}.`,
-        topInstitution: "Top institution",
-        topInstitutionCaption: (name: string, share: string) =>
-          `${name} holds ${share} of the total.`,
+        totalCaption: "in the SNII roll",
+        topState: "Leading state",
+        topStateCaption: "of the national total",
+        topInstitution: "Leading institution",
+        topInstitutionCaption: "of the roll",
         topArea: "Largest knowledge area",
-        topAreaCaption: (name: string, share: string) =>
-          `${name} accounts for ${share} of the roll.`,
+        topAreaCaption: "of the roll",
       },
       tabs: {
         count: "How many?",
