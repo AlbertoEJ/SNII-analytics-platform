@@ -105,6 +105,14 @@ export const messages = {
     stats: {
       title: "Análisis del padrón",
       subtitle: "Sistema Nacional de Investigadoras e Investigadores",
+      yearSelector: {
+        label: "Año",
+        showingYear: (y: number) => `Mostrando datos de ${y}`,
+      },
+      preStateAreaNotice: "Antes de 1990 no se publicó adscripción por entidad ni área de conocimiento.",
+      noStateData: "Sin datos por entidad para este año.",
+      noAreaData: "Sin datos por área para este año.",
+      noInstitutionData: "Sin datos por institución para este año.",
       headline: {
         total: "Total",
         totalCaption: "en el padrón SNII",
@@ -277,6 +285,14 @@ export const messages = {
     stats: {
       title: "Roll analysis",
       subtitle: "National System of Researchers",
+      yearSelector: {
+        label: "Year",
+        showingYear: (y: number) => `Showing data for ${y}`,
+      },
+      preStateAreaNotice: "Before 1990, the roll did not publish state or knowledge-area affiliation.",
+      noStateData: "No state-level data for this year.",
+      noAreaData: "No area-level data for this year.",
+      noInstitutionData: "No institution-level data for this year.",
       headline: {
         total: "Total",
         totalCaption: "in the SNII roll",

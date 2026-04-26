@@ -5,6 +5,8 @@ import { isValidSniiLevel, type SniiLevelCode } from "@/domain/value-objects/Sni
 import { STATE_DISPLAY_NAME, STATE_CODE_TO_DB_NAME } from "@/lib/mexico/stateNameMap";
 import { topNShare } from "@/application/use-cases/TopNShare";
 import { HeadlineDashboard, type HeadlineCard } from "@/presentation/components/stats/HeadlineDashboard";
+import { YearSelector } from "@/presentation/components/stats/YearSelector";
+import { Card, CardContent } from "@/components/ui/card";
 import { QuestionTabs } from "@/presentation/components/stats/QuestionTabs";
 import { CountPane, type LevelFacet } from "@/presentation/components/stats/CountPane";
 import { PlacePane } from "@/presentation/components/stats/PlacePane";
@@ -158,11 +160,29 @@ export default async function StatsPage({
     },
   ];
 
+  const hasStateData = stateLevel.length > 0;
+  const hasAreaData = areaBreakdown.length > 0;
+  const hasInstitutionData = institutions.length > 0;
+  const showPreStateAreaNotice = year < 1990;
+
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-3xl font-semibold tracking-tight">{t.stats.title}</h1>
-        <p className="text-sm text-muted-foreground">{t.stats.subtitle}</p>
+      <header className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-semibold tracking-tight">{t.stats.title}</h1>
+          <p className="text-sm text-muted-foreground">{t.stats.subtitle}</p>
+        </div>
+        <YearSelector
+          availableYears={availableYears}
+          current={year}
+          label={t.stats.yearSelector.label}
+        />
+        <p className="text-xs text-muted-foreground">{t.stats.yearSelector.showingYear(year)}</p>
+        {showPreStateAreaNotice && (
+          <p className="text-xs text-amber-600 dark:text-amber-400">
+            {t.stats.preStateAreaNotice}
+          </p>
+        )}
       </header>
 
       <HeadlineDashboard cards={headlineCards} />
@@ -178,24 +198,42 @@ export default async function StatsPage({
           />
         }
         place={
-          <PlacePane
-            total={total}
-            stateRows={stateLevel}
-            dbToDisplay={dbToDisplay}
-            locale={locale}
-            strings={placeStrings}
-          />
+          hasStateData ? (
+            <PlacePane
+              total={total}
+              stateRows={stateLevel}
+              dbToDisplay={dbToDisplay}
+              locale={locale}
+              strings={placeStrings}
+            />
+          ) : (
+            <EmptyTab message={t.stats.noStateData} />
+          )
         }
         field={
-          <FieldPane
-            total={total}
-            areaRows={areaBreakdown}
-            institutions={institutions}
-            locale={locale}
-            strings={fieldStrings}
-          />
+          hasAreaData || hasInstitutionData ? (
+            <FieldPane
+              total={total}
+              areaRows={areaBreakdown}
+              institutions={institutions}
+              locale={locale}
+              strings={fieldStrings}
+            />
+          ) : (
+            <EmptyTab message={t.stats.noAreaData} />
+          )
         }
       />
     </div>
+  );
+}
+
+function EmptyTab({ message }: { message: string }) {
+  return (
+    <Card>
+      <CardContent className="p-8 text-center text-sm text-muted-foreground">
+        {message}
+      </CardContent>
+    </Card>
   );
 }
