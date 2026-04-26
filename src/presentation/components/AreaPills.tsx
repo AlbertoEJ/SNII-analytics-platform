@@ -6,8 +6,10 @@ interface Props {
   areas: string[];
   active?: string;
   allLabel: string;
-  /** Optional: preserve the year param when switching areas. */
+  /** Optional: preserve the year param when switching areas (Link mode). */
   year?: number;
+  /** When provided, pills become buttons that call onSelect instead of navigating. */
+  onSelect?: (area: string | undefined) => void;
 }
 
 const SHORT_NAMES: Record<string, string> = {
@@ -22,7 +24,7 @@ const SHORT_NAMES: Record<string, string> = {
   IX: "Interdisciplinaria",
 };
 
-export function AreaPills({ areas, active, allLabel, year }: Props) {
+export function AreaPills({ areas, active, allLabel, year, onSelect }: Props) {
   const sorted = [...areas].sort((a, b) => romanValue(a) - romanValue(b));
   const items = [{ value: "", label: allLabel, short: allLabel }].concat(
     sorted.map((a) => ({ value: a, label: a, short: shortLabel(a) })),
@@ -36,24 +38,40 @@ export function AreaPills({ areas, active, allLabel, year }: Props) {
     return qs ? `/?${qs}` : "/";
   };
 
+  const pillClass = (isActive: boolean) =>
+    cn(
+      "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border transition-colors",
+      isActive
+        ? "bg-foreground text-background border-foreground"
+        : "bg-card text-muted-foreground border-border hover:text-foreground hover:border-foreground/40",
+    );
+
   return (
     <div className="flex flex-wrap gap-1.5" role="group" aria-label="Area filter">
       {items.map((it) => {
         const isActive = it.value ? active === it.value : !active;
-        const href = buildHref(it.value);
+        if (onSelect) {
+          return (
+            <button
+              key={it.value || "_all"}
+              type="button"
+              title={it.label}
+              aria-pressed={isActive}
+              onClick={() => onSelect(it.value || undefined)}
+              className={pillClass(isActive)}
+            >
+              {it.short}
+            </button>
+          );
+        }
         return (
           <Link
             key={it.value || "_all"}
-            href={href}
+            href={buildHref(it.value)}
             scroll={false}
             title={it.label}
             aria-pressed={isActive}
-            className={cn(
-              "inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border transition-colors",
-              isActive
-                ? "bg-foreground text-background border-foreground"
-                : "bg-card text-muted-foreground border-border hover:text-foreground hover:border-foreground/40",
-            )}
+            className={pillClass(isActive)}
           >
             {it.short}
           </Link>

@@ -9,6 +9,7 @@ const makeRepo = (totals: { year: number; count: number }[]): SnapshotRepository
     totalsPerYear: async () => totals,
     levelsByYear: async () => [],
     statesByYear: async () => [],
+    statesByYearAndArea: async () => [],
     areasByYear: async () => [],
     institutionsByYear: async () => [],
     netFlowsByYear: async () => [],

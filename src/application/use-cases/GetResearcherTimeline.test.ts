@@ -10,6 +10,7 @@ const stub = (snaps: Partial<ResearcherSnapshot>[]): SnapshotRepository =>
     totalsPerYear: async () => [],
     levelsByYear: async () => [],
     statesByYear: async () => [],
+    statesByYearAndArea: async () => [],
     areasByYear: async () => [],
     institutionsByYear: async () => [],
     netFlowsByYear: async () => [],

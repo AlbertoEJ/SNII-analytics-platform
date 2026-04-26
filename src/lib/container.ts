@@ -11,6 +11,7 @@ import { GetAnalysis } from "@/application/use-cases/GetAnalysis";
 import { GetTotalsPerYear } from "@/application/use-cases/GetTotalsPerYear";
 import { GetLevelsByYear } from "@/application/use-cases/GetLevelsByYear";
 import { GetStatesByYear } from "@/application/use-cases/GetStatesByYear";
+import { GetStatesByYearAndArea } from "@/application/use-cases/GetStatesByYearAndArea";
 import { GetAreasByYear } from "@/application/use-cases/GetAreasByYear";
 import { GetInstitutionsByYear } from "@/application/use-cases/GetInstitutionsByYear";
 import { GetNetFlowsByYear } from "@/application/use-cases/GetNetFlowsByYear";
@@ -32,6 +33,7 @@ function build() {
     getTotalsPerYear: new GetTotalsPerYear(snapshotRepo),
     getLevelsByYear: new GetLevelsByYear(snapshotRepo),
     getStatesByYear: new GetStatesByYear(snapshotRepo),
+    getStatesByYearAndArea: new GetStatesByYearAndArea(snapshotRepo),
     getAreasByYear: new GetAreasByYear(snapshotRepo),
     getInstitutionsByYear: new GetInstitutionsByYear(snapshotRepo),
     getNetFlowsByYear: new GetNetFlowsByYear(snapshotRepo),

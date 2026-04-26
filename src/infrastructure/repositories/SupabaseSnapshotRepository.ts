@@ -1,6 +1,6 @@
 import type { SnSupabaseClient } from "@/infrastructure/supabase/client";
 import type {
-  SnapshotRepository, YearTotal, YearLevelCount, YearStateCount,
+  SnapshotRepository, YearTotal, YearLevelCount, YearStateCount, YearStateAreaCount,
   YearAreaCount, YearInstitutionCount, YearNetFlow, YearStateCountFiltered,
 } from "@/domain/repositories/SnapshotRepository";
 import type { ResearcherSnapshot } from "@/domain/entities/ResearcherSnapshot";
@@ -42,6 +42,15 @@ export class SupabaseSnapshotRepository implements SnapshotRepository {
   async statesByYear(): Promise<YearStateCount[]> {
     const all = await this.fetchAllRpcRows<{ year: number; entidad: string; count: number | string }>("snapshots_states_by_year");
     return all.map((r) => ({ year: toNum(r.year), entidad: r.entidad, count: toNum(r.count) }));
+  }
+
+  async statesByYearAndArea(): Promise<YearStateAreaCount[]> {
+    const all = await this.fetchAllRpcRows<{ year: number; entidad: string; area: string; count: number | string }>(
+      "snapshots_states_by_year_area",
+    );
+    return all.map((r) => ({
+      year: toNum(r.year), entidad: r.entidad, area: r.area, count: toNum(r.count),
+    }));
   }
 
   async areasByYear(): Promise<YearAreaCount[]> {
