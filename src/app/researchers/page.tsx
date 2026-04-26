@@ -39,7 +39,7 @@ export async function generateMetadata({
 }
 
 const NATIVE_SELECT =
-  "flex h-9 w-full items-center justify-between rounded-xl border border-input bg-input/50 px-3 py-2 text-sm shadow-xs transition-colors focus:outline-none focus:ring-3 focus:ring-ring/30 focus:border-ring appearance-none";
+  "flex h-9 w-full items-center justify-between rounded-xl border border-input bg-input/50 text-foreground [&>option]:bg-background [&>option]:text-foreground px-3 py-2 text-sm shadow-xs transition-colors focus:outline-none focus:ring-3 focus:ring-ring/30 focus:border-ring appearance-none";
 
 export default async function ResearchersPage({
   searchParams,
