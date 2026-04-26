@@ -95,7 +95,7 @@ export default async function HistoricPage() {
         <AreasAreaChart rows={areas} />
       </ChartCard>
 
-      <ChartCard title={t.historic.institutions.title} subtitle={t.historic.institutions.subtitle}>
+      <ChartCard title={t.historic.institutions.title(LEGEND_TOP_N)} subtitle={t.historic.institutions.subtitle}>
         <InstitutionBumpChart rows={reranked} topN={LEGEND_TOP_N} />
       </ChartCard>
     </div>

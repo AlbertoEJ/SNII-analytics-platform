@@ -96,7 +96,7 @@ export function InstitutionBumpChart({ rows, topN, width = 1100, height = 420 }:
             </text>
           </g>
         ))}
-        {[1, 5, 10, topN].filter((r) => r <= topN).map((r) => (
+        {Array.from(new Set([1, 5, 10, topN])).filter((r) => r <= topN).map((r) => (
           <text key={r} x={M.left - 4} y={y(r)} dy="0.32em" textAnchor="end" fontSize={10} fill="currentColor" opacity={0.6}>
             {r}
           </text>
